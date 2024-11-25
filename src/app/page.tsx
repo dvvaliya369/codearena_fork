@@ -10,7 +10,6 @@ import {
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { dracula } from "@codesandbox/sandpack-themes";
-import { flushSync } from "react-dom";
 
 export default function Home() {
   const [status, setStatus] = useState("idle");
@@ -70,7 +69,7 @@ export default function Home() {
       {status === "submitted" && modelAResponse && modelBResponse && (
         <div className="mt-8 grid grid-cols-2 gap-8">
           <Result model={modelA} response={modelAResponse} />
-          {/* <Result model={modelB} response={modelBResponse} /> */}
+          <Result model={modelB} response={modelBResponse} />
         </div>
       )}
     </div>
@@ -81,6 +80,8 @@ function Result({ model, response }: { model: string; response: Response }) {
   const [code, setCode] = useState("");
   const [tab, setTab] = useState<"preview" | "code">("code");
   const isRunningRef = useRef(false);
+  const [firstTime, setFirstTime] = useState(false);
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
     if (!response.body || isRunningRef.current) return;
@@ -88,8 +89,13 @@ function Result({ model, response }: { model: string; response: Response }) {
     isRunningRef.current = true;
     ChatCompletionStream.fromReadableStream(response.body)
       .on("content", (delta) => setCode((text) => text + delta))
-      .on("end", () => flushSync(() => setTab("preview")));
+      .on("end", () => setIsDone(true));
   }, []);
+
+  if (isDone && !firstTime) {
+    setFirstTime(true);
+    setTab("preview");
+  }
 
   return (
     <div>
