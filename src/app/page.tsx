@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Sandpack,
   SandpackCodeEditor,
   SandpackLayout,
   SandpackPreview,
@@ -11,16 +10,17 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { dracula } from "@codesandbox/sandpack-themes";
 
+type App = {
+  model: { label: string; apiName: string };
+  isLoading: boolean;
+  response?: Response;
+  code?: string;
+};
+
 export default function Home() {
   const [status, setStatus] = useState("idle");
-  const [modelA, setModelA] = useState("");
-  const [modelB, setModelB] = useState("");
-  const [modelACode, setModelACode] = useState("");
-  const [modelBCode, setModelBCode] = useState("");
-  const [modelALoading, setModelALoading] = useState(false);
-  const [modelBLoading, setModelBLoading] = useState(false);
-  const [modelAResponse, setModelAResponse] = useState<Response>();
-  const [modelBResponse, setModelBResponse] = useState<Response>();
+  const [appA, setAppA] = useState<App>();
+  const [appB, setAppB] = useState<App>();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,28 +28,38 @@ export default function Home() {
     const prompt = formData.get("prompt");
 
     setStatus("submitted");
-    setModelALoading(true);
-    setModelBLoading(true);
     const [modelA, modelB] = getRandomModels();
-    setModelA(modelA);
-    setModelB(modelB);
+    setAppA({
+      model: modelA,
+      isLoading: true,
+    });
+    setAppB({
+      model: modelB,
+      isLoading: true,
+    });
 
     // create a stream for each model
     const [resA, resB] = await Promise.all([
       fetch("/api/generate-app", {
         method: "POST",
-        body: JSON.stringify({ prompt, model: modelA }),
+        body: JSON.stringify({
+          prompt,
+          model: modelA.apiName,
+        }),
       }),
       fetch("/api/generate-app", {
         method: "POST",
-        body: JSON.stringify({ prompt, model: modelB }),
+        body: JSON.stringify({
+          prompt,
+          model: modelB.apiName,
+        }),
       }),
     ]);
 
-    if (!resA.body || !resB.body) return;
+    // if (!resA.body || !resB.body) return;
 
-    setModelAResponse(resA);
-    setModelBResponse(resB);
+    setAppA((a) => (a ? { ...a, response: resA } : undefined));
+    setAppB((b) => (b ? { ...b, response: resB } : undefined));
   }
 
   return (
@@ -66,41 +76,42 @@ export default function Home() {
           <input type="submit" />
         </fieldset>
       </form>
-      {status === "submitted" && modelAResponse && modelBResponse && (
+      {status === "submitted" && appA && appB && (
         <div className="mt-8 grid grid-cols-2 gap-8">
-          <Result model={modelA} response={modelAResponse} />
-          <Result model={modelB} response={modelBResponse} />
+          <Result app={appA} />
+          <Result app={appB} />
         </div>
       )}
     </div>
   );
 }
 
-function Result({ model, response }: { model: string; response: Response }) {
+function Result({ app }: { app: App }) {
   const [code, setCode] = useState("");
   const [tab, setTab] = useState<"preview" | "code">("code");
   const isRunningRef = useRef(false);
-  const [firstTime, setFirstTime] = useState(false);
-  const [isDone, setIsDone] = useState(false);
+  const response = app.response;
 
   useEffect(() => {
-    if (!response.body || isRunningRef.current) return;
+    if (!response || !response.body || isRunningRef.current) return;
 
     isRunningRef.current = true;
     ChatCompletionStream.fromReadableStream(response.body)
-      .on("content", (delta) => setCode((text) => text + delta))
-      .on("end", () => setIsDone(true));
-  }, []);
-
-  if (isDone && !firstTime) {
-    setFirstTime(true);
-    setTab("preview");
-  }
+      .on("content", (delta) => {
+        console.log("Got response", delta);
+        setCode((text) => text + delta);
+      })
+      .on("end", () => {
+        setTimeout(() => {
+          setTab("preview");
+        }, 500);
+      });
+  }, [response]);
 
   return (
     <div>
       <div className="relative">
-        <p className="text-center text-sm">{model}</p>
+        <p className="text-center text-sm">{app.model.label}</p>
         <div className="absolute inset-y-0 right-0 flex gap-2 text-sm">
           <button onClick={() => setTab("preview")}>Preview</button>
           <button onClick={() => setTab("code")}>Code</button>
@@ -132,16 +143,50 @@ function Result({ model, response }: { model: string; response: Response }) {
 }
 
 const models = [
-  "Llama 3.1 70B Instruct Turbo",
-  "Llama 3.1 405B Instruct Turbo",
-  "Llama 3.1 8B Instruct Turbo",
-  "Llama 3.2 11B Vision Instruct Turbo",
-  "Llama 3.2 90B Vision Instruct Turbo",
-  "WizardLM-2 8x22B",
-  "Gemma 2 27B",
-  "Mixtral-8x22B Instruct (141B)",
-  "Qwen 2.5 7B Instruct Turbo",
-  "Qwen 2.5 72B Instruct Turbo",
+  {
+    label: "Llama 3.1 8B Instruct Turbo",
+    apiName: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+  },
+  {
+    label: "Llama 3.1 8B Instruct Turbo",
+    apiName: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+  },
+  {
+    label: "Llama 3.1 70B Instruct Turbo",
+    apiName: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+  },
+  {
+    label: "Llama 3.1 405B Instruct Turbo",
+    apiName: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+  },
+  // {
+  //   label: "Llama 3.2 11B Vision Instruct Turbo",
+  //   apiName: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
+  // },
+  // {
+  //   label: "Llama 3.2 90B Vision Instruct Turbo",
+  //   apiName: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
+  // },
+  {
+    label: "WizardLM-2 8x22B",
+    apiName: "microsoft/WizardLM-2-8x22B",
+  },
+  {
+    label: "Gemma 2 27B",
+    apiName: "google/gemma-2-27b-it",
+  },
+  {
+    label: "Mixtral-8x22B Instruct (141B)",
+    apiName: "mistralai/Mixtral-8x22B-Instruct-v0.1",
+  },
+  {
+    label: "Qwen 2.5 7B Instruct Turbo",
+    apiName: "Qwen/Qwen2.5-7B-Instruct-Turbo",
+  },
+  {
+    label: "Qwen 2.5 72B Instruct Turbo",
+    apiName: "Qwen/Qwen2.5-72B-Instruct-Turbo",
+  },
 ];
 
 function getRandomModels() {
