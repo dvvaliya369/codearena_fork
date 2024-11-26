@@ -26,9 +26,22 @@ export default function Home() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const prompt = formData.get("prompt");
+    const testModel = formData.get("testModel");
 
     setStatus("submitted");
-    const [modelA, modelB] = getRandomModels();
+    let modelA, modelB;
+
+    if (testModel) {
+      const model = models.find((m) => m.apiName === testModel);
+      if (!model) {
+        throw new Error("Test model not found");
+      }
+      modelA = model;
+      modelB = model;
+    } else {
+      [modelA, modelB] = getRandomModels();
+    }
+
     setAppA({
       model: modelA,
       isLoading: true,
@@ -64,16 +77,34 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      Code arena
-      <form onSubmit={handleSubmit}>
-        <fieldset disabled={status !== "idle"}>
-          <input
-            type="text"
-            className="border border-gray-300 px-2 py-1"
-            defaultValue="A todo app"
-            name="prompt"
-          />
-          <input type="submit" />
+      <h1 className="font-bold uppercase tracking-tighter">Code arena</h1>
+      <form onSubmit={handleSubmit} className="mt-4">
+        <fieldset disabled={status !== "idle"} className="space-y-3">
+          <div>
+            <select
+              name="testModel"
+              className="border border-gray-300 px-0.5 py-1"
+            >
+              <option value="">Compare random models</option>
+              {models.map((model) => (
+                <option key={model.apiName} value={model.apiName}>
+                  {model.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <input
+              type="text"
+              className="border border-gray-300 px-2 py-1"
+              defaultValue="A todo app"
+              name="prompt"
+            />
+          </div>
+
+          <div>
+            <input type="submit" />
+          </div>
         </fieldset>
       </form>
       {status === "submitted" && appA && appB && (
@@ -148,10 +179,6 @@ const models = [
     apiName: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
   },
   {
-    label: "Llama 3.1 8B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
-  },
-  {
     label: "Llama 3.1 70B Instruct Turbo",
     apiName: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
   },
@@ -172,6 +199,10 @@ const models = [
     apiName: "microsoft/WizardLM-2-8x22B",
   },
   {
+    label: "Gemma 2 9B",
+    apiName: "google/gemma-2-9b-it",
+  },
+  {
     label: "Gemma 2 27B",
     apiName: "google/gemma-2-27b-it",
   },
@@ -180,12 +211,20 @@ const models = [
     apiName: "mistralai/Mixtral-8x22B-Instruct-v0.1",
   },
   {
-    label: "Qwen 2.5 7B Instruct Turbo",
-    apiName: "Qwen/Qwen2.5-7B-Instruct-Turbo",
+    label: "Qwen 2.5 Coder 32B Instruct",
+    apiName: "Qwen/Qwen2.5-Coder-32B-Instruct",
   },
   {
     label: "Qwen 2.5 72B Instruct Turbo",
     apiName: "Qwen/Qwen2.5-72B-Instruct-Turbo",
+  },
+  {
+    label: "Llama 3.1 Nemotron 70B",
+    apiName: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
+  },
+  {
+    label: "Nous Hermes 2 - Mixtral 8x7B-DPO (46.7B)",
+    apiName: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
   },
 ];
 
