@@ -6,12 +6,16 @@ import {
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useActionState, useEffect, useRef, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { dracula } from "@codesandbox/sandpack-themes";
 import SwordsIcon from "@/components/icons/swords";
+import saveBattle from "./actions";
+import { z } from "zod";
+import { Battle } from "@/schema";
 
 type App = {
+  clientId: string;
   model: { label: string; apiName: string };
   isLoading: boolean;
   response?: Response;
@@ -20,6 +24,7 @@ type App = {
 
 export default function Home() {
   const [status, setStatus] = useState("idle");
+  const [prompt, setPrompt] = useState("A todo app");
   const [appA, setAppA] = useState<App>();
   const [appB, setAppB] = useState<App>();
 
@@ -44,10 +49,12 @@ export default function Home() {
     }
 
     setAppA({
+      clientId: crypto.randomUUID(),
       model: modelA,
       isLoading: true,
     });
     setAppB({
+      clientId: crypto.randomUUID(),
       model: modelB,
       isLoading: true,
     });
@@ -105,8 +112,10 @@ export default function Home() {
           <div className="relative">
             <input
               className="w-full border border-gray-300 px-4 py-5"
-              defaultValue="A todo app"
               name="prompt"
+              placeholder="Enter a prompt"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
             />
 
             <div className="absolute inset-y-0 right-4 flex items-center justify-center">
@@ -127,8 +136,14 @@ export default function Home() {
             <Result app={appB} />
           </div>
           <div>
-            <Vote apps={[appA, appB]} />
+            <p>appA code: {!!appA.code}</p>
+            <p>appA code: {!!appB.code}</p>
           </div>
+          {!!appA.code && !!appB.code && (
+            <div>
+              <Vote prompt={prompt} apps={[appA, appB]} />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -194,16 +209,84 @@ function Result({ app }: { app: App }) {
   );
 }
 
-function Vote({ apps }: { apps: [App, App] }) {
-  let [appA, appB] = apps;
+const savableAppSchema = z.object({
+  model: z.object({
+    label: z.string(),
+    apiName: z.string(),
+  }),
+  code: z.string(),
+});
+
+const saveBattleSchema = z.object({
+  prompt: z.string(),
+  winners: z.array(savableAppSchema),
+  losers: z.array(savableAppSchema),
+});
+
+type State = {
+  battle?: Battle;
+  didVote: boolean;
+};
+
+function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
+  const [appA, appB] = apps;
+
+  const [state, dispatch, isPending] = useActionState<
+    State,
+    { winners: App[] }
+  >(
+    async (previous, payload) => {
+      if (previous.didVote) return previous;
+
+      const winners = payload.winners;
+      const losers = apps.filter(
+        (app) => !winners.some((winner) => winner.clientId === app.clientId),
+      );
+
+      const data = saveBattleSchema.parse({ prompt, winners, losers });
+      const battle = await saveBattle(data);
+
+      return {
+        battle,
+        didVote: true,
+      };
+    },
+    { didVote: false },
+  );
 
   return (
     <div className="flex items-center space-x-4">
       <form>
-        {/* <button formAction={voteA}></button>
-        <button formAction={voteBoth}></button>
-        <button formAction={voteNeither}></button>
-        <button formAction={voteB}></button> */}
+        <fieldset disabled={isPending || state.didVote}>
+          <button
+            formAction={() => {
+              dispatch({ winners: [appA] });
+            }}
+          >
+            A did better
+          </button>
+          <button
+            formAction={() => {
+              dispatch({ winners: [appA, appB] });
+            }}
+          >
+            Both good
+          </button>
+          <button
+            formAction={() => {
+              dispatch({ winners: [] });
+            }}
+          >
+            Both bad
+          </button>
+          <button
+            formAction={() => {
+              dispatch({ winners: [appB] });
+            }}
+          >
+            B did better
+          </button>
+        </fieldset>
       </form>
     </div>
   );

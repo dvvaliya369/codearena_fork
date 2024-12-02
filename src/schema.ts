@@ -22,6 +22,8 @@ export const battles = pgTable("battles", {
   ...timestamps,
 });
 
+export type Battle = typeof battles.$inferSelect;
+
 export const battlesRelations = relations(battles, ({ many }) => ({
   apps: many(apps),
 }));
