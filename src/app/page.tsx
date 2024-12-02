@@ -9,6 +9,7 @@ import {
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { dracula } from "@codesandbox/sandpack-themes";
+import SwordsIcon from "@/components/icons/swords";
 
 type App = {
   model: { label: string; apiName: string };
@@ -77,10 +78,17 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h1 className="font-bold uppercase tracking-tighter">Code arena</h1>
+      <div className="text-center">
+        <h1 className="mt-16 text-2xl font-bold tracking-tighter text-gray-900">
+          Which LLM Codes the Best?
+        </h1>
+        <p className="mt-2 text-sm text-gray-500">
+          Watch AI models compete in real-time, and see who emerges victorious.
+        </p>
+      </div>
       <form onSubmit={handleSubmit} className="mt-4">
         <fieldset disabled={status !== "idle"} className="space-y-3">
-          <div>
+          {/* <div>
             <select
               name="testModel"
               className="border border-gray-300 px-0.5 py-1"
@@ -92,18 +100,23 @@ export default function Home() {
                 </option>
               ))}
             </select>
-          </div>
-          <div>
+          </div> */}
+
+          <div className="relative">
             <input
-              type="text"
-              className="border border-gray-300 px-2 py-1"
+              className="w-full border border-gray-300 px-4 py-5"
               defaultValue="A todo app"
               name="prompt"
             />
-          </div>
 
-          <div>
-            <input type="submit" />
+            <div className="absolute inset-y-0 right-4 flex items-center justify-center">
+              <button
+                className="inline-flex size-6 items-center justify-center bg-blue-500"
+                type="submit"
+              >
+                <SwordsIcon />
+              </button>
+            </div>
           </div>
         </fieldset>
       </form>
