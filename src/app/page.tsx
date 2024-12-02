@@ -131,10 +131,10 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-7xl">
       <div className="text-center">
-        <h1 className="mt-16 text-2xl font-bold tracking-tighter text-gray-900">
+        <h1 className="mt-16 text-2xl font-bold tracking-[-.01em] text-gray-900">
           Which LLM Codes the Best?
         </h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-balance text-sm tracking-[-.01em] text-gray-500">
           Watch AI models compete in real-time, and see who emerges victorious.
         </p>
       </div>

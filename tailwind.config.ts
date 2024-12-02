@@ -24,7 +24,11 @@ export default {
         500: "#4845FE",
       },
     },
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["var(--font-tektur)"],
+      },
+    },
   },
   plugins: [],
 } satisfies Config;
