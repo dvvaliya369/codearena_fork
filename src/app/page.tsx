@@ -128,20 +128,22 @@ function Result({ app }: { app: App }) {
   const isRunningRef = useRef(false);
   const response = app.response;
 
+  let trimmedCode = code.split("\n")[0]?.trim().startsWith("```")
+    ? code.split("\n").slice(1).join("\n")
+    : code;
+  trimmedCode = trimmedCode.split("\n").at(-1)?.trim().startsWith("```")
+    ? trimmedCode.split("\n").slice(0, -1).join("\n")
+    : trimmedCode;
+
   useEffect(() => {
     if (!response || !response.body || isRunningRef.current) return;
 
     isRunningRef.current = true;
     ChatCompletionStream.fromReadableStream(response.body)
       .on("content", (delta) => {
-        console.log("Got response", delta);
         setCode((text) => text + delta);
       })
-      .on("end", () => {
-        setTimeout(() => {
-          setTab("preview");
-        }, 500);
-      });
+      .on("end", () => setTab("preview"));
   }, [response]);
 
   return (
@@ -156,7 +158,7 @@ function Result({ app }: { app: App }) {
 
       <div className="mt-4">
         <SandpackProvider
-          files={{ "App.tsx": code }}
+          files={{ "App.tsx": trimmedCode }}
           template="react-ts"
           theme={dracula}
           options={{
@@ -166,11 +168,12 @@ function Result({ app }: { app: App }) {
           }}
         >
           <SandpackLayout>
-            {tab === "code" ? (
-              <SandpackCodeEditor style={{ height: "80vh" }} />
-            ) : (
-              <SandpackPreview style={{ height: "80vh" }} />
-            )}
+            <div className={`${tab === "code" ? "" : "hidden"} w-full`}>
+              <SandpackCodeEditor style={{ height: "60vh" }} />
+            </div>
+            <div className={`${tab === "preview" ? "" : "hidden"} w-full`}>
+              <SandpackPreview style={{ height: "60vh" }} />
+            </div>
           </SandpackLayout>
         </SandpackProvider>
       </div>
@@ -184,10 +187,10 @@ function Vote({ apps }: { apps: [App, App] }) {
   return (
     <div className="flex items-center space-x-4">
       <form>
-        <button formAction={voteA}></button>
+        {/* <button formAction={voteA}></button>
         <button formAction={voteBoth}></button>
         <button formAction={voteNeither}></button>
-        <button formAction={voteB}></button>
+        <button formAction={voteB}></button> */}
       </form>
     </div>
   );
