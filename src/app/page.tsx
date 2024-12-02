@@ -18,8 +18,8 @@ type App = {
   clientId: string;
   model: { label: string; apiName: string };
   isLoading: boolean;
-  response?: Response;
-  code?: string;
+  code: string;
+  status: "idle" | "generating" | "complete";
 };
 
 export default function Home() {
@@ -27,6 +27,8 @@ export default function Home() {
   const [prompt, setPrompt] = useState("A todo app");
   const [appA, setAppA] = useState<App>();
   const [appB, setAppB] = useState<App>();
+  const [selectedTabA, setSelectedTabA] = useState<"code" | "preview">("code");
+  const [selectedTabB, setSelectedTabB] = useState<"code" | "preview">("code");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,13 +52,17 @@ export default function Home() {
 
     setAppA({
       clientId: crypto.randomUUID(),
+      code: "",
       model: modelA,
       isLoading: true,
+      status: "generating",
     });
     setAppB({
       clientId: crypto.randomUUID(),
+      code: "",
       model: modelB,
       isLoading: true,
+      status: "generating",
     });
 
     // create a stream for each model
@@ -77,10 +83,36 @@ export default function Home() {
       }),
     ]);
 
-    // if (!resA.body || !resB.body) return;
+    if (!resA.body || !resB.body) return;
 
-    setAppA((a) => (a ? { ...a, response: resA } : undefined));
-    setAppB((b) => (b ? { ...b, response: resB } : undefined));
+    ChatCompletionStream.fromReadableStream(resA.body)
+      .on("content", (delta) =>
+        setAppA((app) =>
+          app ? { ...app, code: app.code + delta } : undefined,
+        ),
+      )
+      .on("end", () => {
+        setAppA((app) =>
+          app
+            ? { ...app, status: "complete", selectedTab: "preview" }
+            : undefined,
+        );
+        setSelectedTabA("preview");
+      });
+    ChatCompletionStream.fromReadableStream(resB.body)
+      .on("content", (delta) =>
+        setAppB((app) =>
+          app ? { ...app, code: app.code + delta } : undefined,
+        ),
+      )
+      .on("end", () => {
+        setAppB((app) =>
+          app
+            ? { ...app, status: "complete", selectedTab: "preview" }
+            : undefined,
+        );
+        setSelectedTabB("preview");
+      });
   }
 
   return (
@@ -132,8 +164,16 @@ export default function Home() {
       {status === "submitted" && appA && appB && (
         <div>
           <div className="mt-8 grid grid-cols-2 gap-8">
-            <Result app={appA} />
-            <Result app={appB} />
+            <Result
+              app={appA}
+              selectedTab={selectedTabA}
+              onTabSelect={setSelectedTabA}
+            />
+            <Result
+              app={appB}
+              selectedTab={selectedTabB}
+              onTabSelect={setSelectedTabB}
+            />
           </div>
           <div>
             <p>appA code: {!!appA.code}</p>
@@ -150,11 +190,16 @@ export default function Home() {
   );
 }
 
-function Result({ app }: { app: App }) {
-  const [code, setCode] = useState("");
-  const [tab, setTab] = useState<"preview" | "code">("code");
-  const isRunningRef = useRef(false);
-  const response = app.response;
+function Result({
+  app,
+  selectedTab,
+  onTabSelect,
+}: {
+  app: App;
+  selectedTab: "code" | "preview";
+  onTabSelect: (v: "code" | "preview") => void;
+}) {
+  const code = app.code;
 
   let trimmedCode = code.split("\n")[0]?.trim().startsWith("```")
     ? code.split("\n").slice(1).join("\n")
@@ -163,24 +208,13 @@ function Result({ app }: { app: App }) {
     ? trimmedCode.split("\n").slice(0, -1).join("\n")
     : trimmedCode;
 
-  useEffect(() => {
-    if (!response || !response.body || isRunningRef.current) return;
-
-    isRunningRef.current = true;
-    ChatCompletionStream.fromReadableStream(response.body)
-      .on("content", (delta) => {
-        setCode((text) => text + delta);
-      })
-      .on("end", () => setTab("preview"));
-  }, [response]);
-
   return (
     <div>
       <div className="relative">
         <p className="text-center text-sm">{app.model.label}</p>
         <div className="absolute inset-y-0 right-0 flex gap-2 text-sm">
-          <button onClick={() => setTab("preview")}>Preview</button>
-          <button onClick={() => setTab("code")}>Code</button>
+          <button onClick={() => onTabSelect("preview")}>Preview</button>
+          <button onClick={() => onTabSelect("code")}>Code</button>
         </div>
       </div>
 
@@ -196,10 +230,12 @@ function Result({ app }: { app: App }) {
           }}
         >
           <SandpackLayout>
-            <div className={`${tab === "code" ? "" : "hidden"} w-full`}>
+            <div className={`${selectedTab === "code" ? "" : "hidden"} w-full`}>
               <SandpackCodeEditor style={{ height: "60vh" }} />
             </div>
-            <div className={`${tab === "preview" ? "" : "hidden"} w-full`}>
+            <div
+              className={`${selectedTab === "preview" ? "" : "hidden"} w-full`}
+            >
               <SandpackPreview style={{ height: "60vh" }} />
             </div>
           </SandpackLayout>

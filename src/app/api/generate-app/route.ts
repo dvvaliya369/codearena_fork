@@ -28,7 +28,6 @@ export async function POST(request: Request) {
           - NEVER import any CSS files like ./App.css
           - Use Tailwind margin and padding classes to style the components and ensure the components are spaced out nicely
           - Please ONLY return the full React code starting with the imports, nothing else. It's very important for my job that you only return the React code with imports. DO NOT START WITH \`\`\`typescript or \`\`\`javascript or \`\`\`tsx or \`\`\`.
-          - For placeholder images, please use a <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
           - Do not import any libraries or dependencies other than React
           - NO OTHER LIBRARIES (e.g. zod, hookform) ARE INSTALLED OR ABLE TO BE IMPORTED.
         `,
