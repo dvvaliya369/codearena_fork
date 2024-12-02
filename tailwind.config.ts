@@ -28,7 +28,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-tektur)"],
+        title: ["var(--font-tektur)"],
+        sans: ["var(--font-plus-jakarta-sans)"],
       },
       borderRadius: {
         lg: "var(--radius)",

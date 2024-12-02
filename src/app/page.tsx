@@ -135,7 +135,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-7xl">
       <div className="text-center">
-        <h1 className="mt-8 text-2xl font-bold tracking-[-.01em] text-gray-900">
+        <h1 className="font-title mt-8 text-2xl font-bold tracking-[-.01em] text-gray-900">
           Which LLM Codes the Best?
         </h1>
         <p className="mt-2 text-balance text-sm tracking-[-.01em] text-gray-500">
@@ -179,7 +179,7 @@ export default function Home() {
           <div className="mt-8">
             <Button
               type="submit"
-              className="inline-flex h-auto w-full py-3 text-base font-bold"
+              className="font-title inline-flex h-auto w-full py-3 text-base font-bold"
             >
               <ArrowsIcon className="size-[88px]" />
               Code Battle
@@ -265,8 +265,10 @@ function Result({
           }}
         >
           <SandpackLayout>
-            <div className={`${selectedTab === "code" ? "" : "hidden"} w-full`}>
-              <SandpackCodeEditor style={{ height: "60vh" }} />
+            <div
+              className={`${selectedTab === "code" ? "" : "hidden"} w-full min-w-0 max-w-full overflow-hidden`}
+            >
+              <SandpackCodeEditor className="h-[60vh] [&_.cm-scroller]:flex-col-reverse" />
             </div>
             <div
               className={`${selectedTab === "preview" ? "" : "hidden"} w-full`}

@@ -32,7 +32,7 @@
 }
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border min-w-0;
   }
   body {
     @apply bg-background text-foreground;

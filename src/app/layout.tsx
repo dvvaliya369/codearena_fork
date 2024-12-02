@@ -1,6 +1,6 @@
 import Logo from "@/components/logo";
 import type { Metadata } from "next";
-import { Tektur } from "next/font/google";
+import { Tektur, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -11,6 +11,11 @@ const tektur = Tektur({
   weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
   variable: "--font-tektur",
+});
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-plus-jakarta-sans",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${tektur.variable}`}>
+    <html
+      lang="en"
+      className={`${tektur.variable} ${plusJakartaSans.variable}`}
+    >
       <body className="bg-gray-300 text-gray-500 antialiased">
         <header className="px-4 py-2">
           <Logo />
