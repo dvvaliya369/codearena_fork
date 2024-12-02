@@ -108,9 +108,14 @@ export default function Home() {
         </fieldset>
       </form>
       {status === "submitted" && appA && appB && (
-        <div className="mt-8 grid grid-cols-2 gap-8">
-          <Result app={appA} />
-          <Result app={appB} />
+        <div>
+          <div className="mt-8 grid grid-cols-2 gap-8">
+            <Result app={appA} />
+            <Result app={appB} />
+          </div>
+          <div>
+            <Vote apps={[appA, appB]} />
+          </div>
         </div>
       )}
     </div>
@@ -169,6 +174,21 @@ function Result({ app }: { app: App }) {
           </SandpackLayout>
         </SandpackProvider>
       </div>
+    </div>
+  );
+}
+
+function Vote({ apps }: { apps: [App, App] }) {
+  let [appA, appB] = apps;
+
+  return (
+    <div className="flex items-center space-x-4">
+      <form>
+        <button formAction={voteA}></button>
+        <button formAction={voteBoth}></button>
+        <button formAction={voteNeither}></button>
+        <button formAction={voteB}></button>
+      </form>
     </div>
   );
 }
