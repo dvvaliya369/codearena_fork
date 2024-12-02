@@ -6,6 +6,7 @@ import { apps, battles } from "@/schema";
 type App = {
   model: { label: string; apiName: string };
   code: string;
+  trimmedCode: string;
 };
 
 export default async function saveBattle({
@@ -20,35 +21,35 @@ export default async function saveBattle({
   // TODO read cookie if it exists, otherwise create one
   const creatorCookie = "TODO";
 
-  return await db.transaction(async (db) => {
-    const result = await db
-      .insert(battles)
-      .values({
-        prompt,
-        creatorCookie,
-      })
-      .returning();
+  const result = await db
+    .insert(battles)
+    .values({
+      prompt,
+      creatorCookie,
+    })
+    .returning();
 
-    const battle = result[0];
+  const battle = result[0];
 
-    for (const winner of winners) {
-      await db.insert(apps).values({
-        battleId: battle.id,
-        model: winner.model.apiName,
-        code: winner.code,
-        didWin: true,
-      });
-    }
+  for (const winner of winners) {
+    await db.insert(apps).values({
+      battleId: battle.id,
+      model: winner.model.apiName,
+      code: winner.code,
+      trimmedCode: winner.trimmedCode,
+      didWin: true,
+    });
+  }
 
-    for (const loser of losers) {
-      await db.insert(apps).values({
-        battleId: battle.id,
-        model: loser.model.apiName,
-        code: loser.code,
-        didWin: false,
-      });
-    }
+  for (const loser of losers) {
+    await db.insert(apps).values({
+      battleId: battle.id,
+      model: loser.model.apiName,
+      code: loser.code,
+      trimmedCode: loser.trimmedCode,
+      didWin: false,
+    });
+  }
 
-    return battle;
-  });
+  return battle;
 }

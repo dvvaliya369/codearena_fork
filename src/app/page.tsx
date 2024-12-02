@@ -1,24 +1,25 @@
 "use client";
 
+import SwordsIcon from "@/components/icons/swords";
+import { Battle } from "@/schema";
 import {
   SandpackCodeEditor,
   SandpackLayout,
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { FormEvent, useActionState, useEffect, useRef, useState } from "react";
-import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { dracula } from "@codesandbox/sandpack-themes";
-import SwordsIcon from "@/components/icons/swords";
-import saveBattle from "./actions";
+import { FormEvent, useActionState, useState } from "react";
+import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { z } from "zod";
-import { Battle } from "@/schema";
+import saveBattle from "./actions";
 
 type App = {
   clientId: string;
   model: { label: string; apiName: string };
   isLoading: boolean;
   code: string;
+  trimmedCode: string;
   status: "idle" | "generating" | "complete";
 };
 
@@ -53,6 +54,7 @@ export default function Home() {
     setAppA({
       clientId: crypto.randomUUID(),
       code: "",
+      trimmedCode: "",
       model: modelA,
       isLoading: true,
       status: "generating",
@@ -60,6 +62,7 @@ export default function Home() {
     setAppB({
       clientId: crypto.randomUUID(),
       code: "",
+      trimmedCode: "",
       model: modelB,
       isLoading: true,
       status: "generating",
@@ -87,9 +90,14 @@ export default function Home() {
 
     ChatCompletionStream.fromReadableStream(resA.body)
       .on("content", (delta) =>
-        setAppA((app) =>
-          app ? { ...app, code: app.code + delta } : undefined,
-        ),
+        setAppA((app) => {
+          if (!app) return;
+
+          const code = app.code + delta;
+          const trimmedCode = trimCode(code);
+
+          return { ...app, code, trimmedCode };
+        }),
       )
       .on("end", () => {
         setAppA((app) =>
@@ -101,9 +109,14 @@ export default function Home() {
       });
     ChatCompletionStream.fromReadableStream(resB.body)
       .on("content", (delta) =>
-        setAppB((app) =>
-          app ? { ...app, code: app.code + delta } : undefined,
-        ),
+        setAppB((app) => {
+          if (!app) return;
+
+          const code = app.code + delta;
+          const trimmedCode = trimCode(code);
+
+          return { ...app, code, trimmedCode };
+        }),
       )
       .on("end", () => {
         setAppB((app) =>
@@ -199,15 +212,6 @@ function Result({
   selectedTab: "code" | "preview";
   onTabSelect: (v: "code" | "preview") => void;
 }) {
-  const code = app.code;
-
-  let trimmedCode = code.split("\n")[0]?.trim().startsWith("```")
-    ? code.split("\n").slice(1).join("\n")
-    : code;
-  trimmedCode = trimmedCode.split("\n").at(-1)?.trim().startsWith("```")
-    ? trimmedCode.split("\n").slice(0, -1).join("\n")
-    : trimmedCode;
-
   return (
     <div>
       <div className="relative">
@@ -220,7 +224,7 @@ function Result({
 
       <div className="mt-4">
         <SandpackProvider
-          files={{ "App.tsx": trimmedCode }}
+          files={{ "App.tsx": app.trimmedCode }}
           template="react-ts"
           theme={dracula}
           options={{
@@ -251,6 +255,7 @@ const savableAppSchema = z.object({
     apiName: z.string(),
   }),
   code: z.string(),
+  trimmedCode: z.string(),
 });
 
 const saveBattleSchema = z.object({
@@ -386,4 +391,16 @@ const models = [
 function getRandomModels() {
   const shuffled = models.sort(() => 0.5 - Math.random());
   return [shuffled[0], shuffled[1]];
+}
+
+function trimCode(code: string) {
+  let trimmedCode = code.trim();
+  trimmedCode = trimmedCode.split("\n")[0]?.startsWith("```")
+    ? trimmedCode.split("\n").slice(1).join("\n")
+    : trimmedCode;
+  trimmedCode = trimmedCode.split("\n").at(-1)?.startsWith("```")
+    ? trimmedCode.split("\n").slice(0, -1).join("\n")
+    : trimmedCode;
+
+  return trimmedCode;
 }

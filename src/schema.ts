@@ -28,7 +28,7 @@ export const battlesRelations = relations(battles, ({ many }) => ({
   apps: many(apps),
 }));
 
-export const apps = pgTable("participants", {
+export const apps = pgTable("apps", {
   id: serial("id").primaryKey(),
   battleId: integer("battle_id")
     .notNull()
@@ -36,8 +36,11 @@ export const apps = pgTable("participants", {
   model: text("model").notNull(),
   didWin: boolean("did_win").notNull(),
   code: text("code").notNull(),
+  trimmedCode: text("trimmed_code").notNull(),
   ...timestamps,
 });
+
+export type App = typeof apps.$inferSelect;
 
 export const appsRelations = relations(apps, ({ one }) => ({
   battle: one(battles, {
