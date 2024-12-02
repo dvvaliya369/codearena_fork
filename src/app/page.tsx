@@ -13,6 +13,10 @@ import { FormEvent, useActionState, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { z } from "zod";
 import saveBattle from "./actions";
+import { Button } from "@/components/ui/button";
+import ArrowsIcon from "@/components/icons/arrows";
+import modelBackgroundImage from "@/public/model-background.png";
+import Image from "next/image";
 
 type App = {
   clientId: string;
@@ -131,7 +135,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-7xl">
       <div className="text-center">
-        <h1 className="mt-16 text-2xl font-bold tracking-[-.01em] text-gray-900">
+        <h1 className="mt-8 text-2xl font-bold tracking-[-.01em] text-gray-900">
           Which LLM Codes the Best?
         </h1>
         <p className="mt-2 text-balance text-sm tracking-[-.01em] text-gray-500">
@@ -166,28 +170,42 @@ export default function Home() {
             <div className="absolute inset-y-0 right-4 flex items-center justify-center">
               <button
                 className="inline-flex size-6 items-center justify-center bg-blue-500"
-                type="submit"
+                type="button"
               >
                 <SwordsIcon />
               </button>
             </div>
           </div>
+          <div className="mt-8">
+            <Button
+              type="submit"
+              className="inline-flex h-auto w-full py-3 text-base font-bold"
+            >
+              <ArrowsIcon className="size-[88px]" />
+              Code Battle
+            </Button>
+          </div>
         </fieldset>
       </form>
+      <div>
+        <div className="mt-8 grid gap-4 md:grid-cols-2 md:gap-8">
+          <Result
+            app={appA}
+            selectedTab={selectedTabA}
+            onTabSelect={setSelectedTabA}
+            placeholder="Model A"
+          />
+          <Result
+            app={appB}
+            selectedTab={selectedTabB}
+            onTabSelect={setSelectedTabB}
+            placeholder="Model B"
+          />
+        </div>
+      </div>
+
       {status === "submitted" && appA && appB && (
         <div>
-          <div className="mt-8 grid grid-cols-2 gap-8">
-            <Result
-              app={appA}
-              selectedTab={selectedTabA}
-              onTabSelect={setSelectedTabA}
-            />
-            <Result
-              app={appB}
-              selectedTab={selectedTabB}
-              onTabSelect={setSelectedTabB}
-            />
-          </div>
           <div>
             <p>appA code: {!!appA.code}</p>
             <p>appA code: {!!appB.code}</p>
@@ -207,14 +225,27 @@ function Result({
   app,
   selectedTab,
   onTabSelect,
+  placeholder,
 }: {
-  app: App;
+  app: App | undefined;
   selectedTab: "code" | "preview";
   onTabSelect: (v: "code" | "preview") => void;
+  placeholder: string;
 }) {
+  if (!app) {
+    return (
+      <div className="relative">
+        <Image src={modelBackgroundImage} alt="" />
+        <div className="absolute inset-x-0 top-[60%] flex items-center justify-center">
+          <p className="text-lg text-gray-900">{placeholder}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="relative">
+      <div className="relative flex justify-between">
         <p className="text-center text-sm">{app.model.label}</p>
         <div className="absolute inset-y-0 right-0 flex gap-2 text-sm">
           <button onClick={() => onTabSelect("preview")}>Preview</button>

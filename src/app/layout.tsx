@@ -2,6 +2,10 @@ import Logo from "@/components/logo";
 import type { Metadata } from "next";
 import { Tektur } from "next/font/google";
 import "./globals.css";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import GithubIcon from "@/components/icons/github";
+import XIcon from "@/components/icons/x";
 
 const tektur = Tektur({
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -25,7 +29,28 @@ export default function RootLayout({
         <header className="px-4 py-2">
           <Logo />
         </header>
+
         <main className="px-4 py-8">{children}</main>
+
+        <footer className="mt-16 flex w-full items-center justify-between p-2">
+          <p className="text-xs">Powered by Together.ai</p>
+
+          <div className="inline-flex items-center gap-2">
+            <Button size="sm" variant="ghost" className="border" asChild>
+              <Link href="#">
+                <GithubIcon />
+                GitHub
+              </Link>
+            </Button>
+
+            <Button size="sm" variant="ghost" className="border" asChild>
+              <Link href="#">
+                <XIcon />
+                Twitter
+              </Link>
+            </Button>
+          </div>
+        </footer>
       </body>
     </html>
   );
