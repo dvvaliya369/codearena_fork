@@ -231,7 +231,7 @@ export default function Home() {
               type="submit"
               className="inline-flex h-auto w-full py-3 font-title text-base font-bold md:w-auto md:px-6"
             >
-              <SwordsIcon className="size-[88px]" />
+              <SwordsIcon className="size-[18px]" />
               Code Battle
             </Button>
           </div>

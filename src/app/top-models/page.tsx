@@ -1,8 +1,6 @@
 import { db } from "@/db";
 import { apps, battles } from "@/schema";
 import { count, countDistinct, desc, sql, sum } from "drizzle-orm";
-import { MoveUpRightIcon } from "lucide-react";
-
 import {
   Table,
   TableBody,
@@ -12,6 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { models } from "../models";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import UpRightArrow from "@/components/icons/up-right-arrow";
 
 export default async function Page() {
   const [{ totalUsers }] = await db
@@ -43,32 +45,38 @@ export default async function Page() {
         Top models <span className="text-blue-500">[all time]</span>
       </h1>
 
-      <div className="border-gray-100 mt-12 flex items-center justify-between border px-12 py-5 tracking-[-0.02em] text-gray-900">
+      <div className="border-gray-100 mt-8 grid grid-cols-2 items-center justify-between gap-5 border p-5 tracking-[-0.02em] text-gray-900">
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.length}
           </div>
-          <div className="text-sm"># of models</div>
+          <div className="text-sm text-gray-500"># of models</div>
         </div>
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.reduce((total, row) => total + row.wins, 0)}
           </div>
-          <div className="text-sm"># of votes</div>
+          <div className="text-sm text-gray-500"># of votes</div>
         </div>
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.reduce((total, row) => total + row.games, 0)}
           </div>
-          <div className="text-sm"># games played</div>
+          <div className="text-sm text-gray-500"># games played</div>
         </div>
         <div className="text-center">
           <div className="font-title text-xl font-semibold">{totalUsers}</div>
-          <div className="text-sm"># of users</div>
+          <div className="text-sm text-gray-500"># of users</div>
         </div>
       </div>
 
-      <Table>
+      <div className="mt-4 flex flex-col gap-4">
+        {results.map((result, index) => (
+          <ResultCard result={result} index={index} key={result.model} />
+        ))}
+      </div>
+
+      {/* <Table>
         <TableHeader>
           <TableRow>
             <TableHead></TableHead>
@@ -101,7 +109,69 @@ export default async function Page() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
+    </div>
+  );
+}
+
+function ResultCard({
+  result,
+  index,
+}: {
+  result: {
+    model: string;
+    wins: number;
+    losses: number;
+    games: number;
+    winPercentage: number;
+  };
+  index: number;
+}) {
+  const model = models.find((m) => m.apiName === result.model);
+  if (!model) return;
+
+  return (
+    <div className="border-gray-100 flex border py-6">
+      <div className="w-1/5 text-center font-title text-xl font-medium tabular-nums tracking-[-.02em]">
+        {index + 1}.
+      </div>
+      <div className="w-3/5">
+        <div className="flex items-center gap-2">
+          <Image src={model.logo} alt="" className="size-6 shrink-0" />
+          <p className="truncate font-title text-xl text-gray-900">
+            {model.shortLabel}
+          </p>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-xs">Organization:</p>
+            <p className="truncate font-title text-sm">{model.organization}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs">Total Games:</p>
+            <p className="font-title text-sm">{result.games}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs">Win %:</p>
+            <p className="font-title text-sm text-gray-900">
+              <strong>{result.winPercentage}%</strong>
+            </p>
+          </div>
+
+          <div className="mt-4">
+            <Button asChild className="h-auto w-full font-title">
+              <Link
+                href={`https://api.together.xyz/playground/chat/${result.model}`}
+                target="_blank"
+              >
+                Playground
+                <UpRightArrow className="size-2.5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
