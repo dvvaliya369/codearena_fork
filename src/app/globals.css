@@ -11,8 +11,8 @@
     --popover-foreground: 224 71.4% 4.1%;
     --primary: 241 99% 63%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
+    --secondary: 36 33% 97%;
+    --secondary-foreground: 0 0% 54%;
     --muted: 220 14.3% 95.9%;
     --muted-foreground: 220 8.9% 46.1%;
     --accent: 220 14.3% 95.9%;
@@ -32,7 +32,7 @@
 }
 @layer base {
   * {
-    @apply border-border min-w-0;
+    @apply min-w-0 border-border;
   }
   body {
     @apply bg-background text-foreground;

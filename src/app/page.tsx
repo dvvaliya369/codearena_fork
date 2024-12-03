@@ -1,5 +1,7 @@
 "use client";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import SwordsIcon from "@/components/icons/swords";
 import { Battle } from "@/schema";
 import {
@@ -14,9 +16,11 @@ import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { z } from "zod";
 import saveBattle from "./actions";
 import { Button } from "@/components/ui/button";
-import ArrowsIcon from "@/components/icons/arrows";
+// import ArrowsIcon from "@/components/icons/arrows";
 import modelBackgroundImage from "@/public/model-background.png";
 import Image from "next/image";
+import Link from "next/link";
+import RibbonIcon from "@/components/icons/ribbon";
 
 type App = {
   clientId: string;
@@ -28,20 +32,26 @@ type App = {
 };
 
 export default function Home() {
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState<"idle" | "generating" | "complete">(
+    "idle",
+  );
   const [prompt, setPrompt] = useState("A todo app");
   const [appA, setAppA] = useState<App>();
   const [appB, setAppB] = useState<App>();
-  const [selectedTabA, setSelectedTabA] = useState<"code" | "preview">("code");
-  const [selectedTabB, setSelectedTabB] = useState<"code" | "preview">("code");
+  const [selectedTabA, setSelectedTabA] = useState("code");
+  const [selectedTabB, setSelectedTabB] = useState("code");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setSelectedTabA("code");
+    setSelectedTabB("code");
+
     const formData = new FormData(event.currentTarget);
     const prompt = formData.get("prompt");
     const testModel = formData.get("testModel");
 
-    setStatus("submitted");
+    setStatus("generating");
     let modelA, modelB;
 
     if (testModel) {
@@ -92,6 +102,7 @@ export default function Home() {
 
     if (!resA.body || !resB.body) return;
 
+    let generatingCount = 2;
     ChatCompletionStream.fromReadableStream(resA.body)
       .on("content", (delta) =>
         setAppA((app) => {
@@ -110,6 +121,10 @@ export default function Home() {
             : undefined,
         );
         setSelectedTabA("preview");
+        generatingCount--;
+        if (generatingCount === 0) {
+          setStatus("complete");
+        }
       });
     ChatCompletionStream.fromReadableStream(resB.body)
       .on("content", (delta) =>
@@ -129,13 +144,17 @@ export default function Home() {
             : undefined,
         );
         setSelectedTabB("preview");
+        generatingCount--;
+        if (generatingCount === 0) {
+          setStatus("complete");
+        }
       });
   }
 
   return (
     <div className="mx-auto max-w-7xl">
       <div className="text-center">
-        <h1 className="font-title mt-8 text-2xl font-bold tracking-[-.01em] text-gray-900">
+        <h1 className="mt-8 font-title text-2xl font-bold tracking-[-.01em] text-gray-900">
           Which LLM Codes the Best?
         </h1>
         <p className="mt-2 text-balance text-sm tracking-[-.01em] text-gray-500">
@@ -143,7 +162,7 @@ export default function Home() {
         </p>
       </div>
       <form onSubmit={handleSubmit} className="mt-4">
-        <fieldset disabled={status !== "idle"} className="space-y-3">
+        <fieldset disabled={status === "generating"}>
           {/* <div>
             <select
               name="testModel"
@@ -167,21 +186,43 @@ export default function Home() {
               onChange={(e) => setPrompt(e.target.value)}
             />
 
-            <div className="absolute inset-y-0 right-4 flex items-center justify-center">
+            {/* <div className="absolute inset-y-0 right-4 flex items-center justify-center">
               <button
                 className="inline-flex size-6 items-center justify-center bg-blue-500"
                 type="button"
               >
                 <SwordsIcon />
               </button>
-            </div>
+            </div> */}
           </div>
-          <div className="mt-8">
+
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            {[
+              "Product page",
+              "To-do list app",
+              "Blog homepage",
+              "Chat interface",
+              "Weather dashboard",
+            ].map((example) => (
+              <Button
+                onClick={() => setPrompt(example)}
+                key={example}
+                type="button"
+                variant="secondary"
+                size="sm"
+              >
+                {example}
+              </Button>
+            ))}
+          </div>
+
+          <div className="mt-10">
             <Button
               type="submit"
-              className="font-title inline-flex h-auto w-full py-3 text-base font-bold"
+              className="inline-flex h-auto w-full py-3 font-title text-base font-bold"
             >
-              <ArrowsIcon className="size-[88px]" />
+              <SwordsIcon className="size-[88px]" />
+              {/* <ArrowsIcon className="size-[88px]" /> */}
               Code Battle
             </Button>
           </div>
@@ -204,18 +245,8 @@ export default function Home() {
         </div>
       </div>
 
-      {status === "submitted" && appA && appB && (
-        <div>
-          <div>
-            <p>appA code: {!!appA.code}</p>
-            <p>appA code: {!!appB.code}</p>
-          </div>
-          {!!appA.code && !!appB.code && (
-            <div>
-              <Vote prompt={prompt} apps={[appA, appB]} />
-            </div>
-          )}
-        </div>
+      {status === "complete" && appA && appB && (
+        <Vote prompt={prompt} apps={[appA, appB]} />
       )}
     </div>
   );
@@ -228,14 +259,19 @@ function Result({
   placeholder,
 }: {
   app: App | undefined;
-  selectedTab: "code" | "preview";
-  onTabSelect: (v: "code" | "preview") => void;
+  selectedTab: string;
+  onTabSelect: (v: string) => void;
   placeholder: string;
 }) {
   if (!app) {
     return (
-      <div className="relative">
-        <Image src={modelBackgroundImage} alt="" />
+      <div className="relative mt-9 bg-gray-200">
+        <Image
+          priority
+          src={modelBackgroundImage}
+          alt=""
+          className="aspect-square object-contain"
+        />
         <div className="absolute inset-x-0 top-[60%] flex items-center justify-center">
           <p className="text-lg text-gray-900">{placeholder}</p>
         </div>
@@ -245,39 +281,66 @@ function Result({
 
   return (
     <div>
-      <div className="relative flex justify-between">
-        <p className="text-center text-sm">{app.model.label}</p>
-        <div className="absolute inset-y-0 right-0 flex gap-2 text-sm">
-          <button onClick={() => onTabSelect("preview")}>Preview</button>
-          <button onClick={() => onTabSelect("code")}>Code</button>
+      <Tabs value={selectedTab} onValueChange={onTabSelect}>
+        <div className="flex items-center justify-between">
+          <p className="truncate text-center text-gray-900">
+            {placeholder}
+            {/* {app.model.label} */}
+          </p>
+          <TabsList className="h-auto bg-white p-0">
+            <TabsTrigger
+              className="border border-r-0 border-gray-500 data-[state=active]:border-black data-[state=active]:bg-black data-[state=active]:text-white"
+              value="preview"
+            >
+              Preview
+            </TabsTrigger>
+            <TabsTrigger
+              className="border border-l-0 border-gray-500 data-[state=active]:border-black data-[state=active]:bg-black data-[state=active]:text-white"
+              value="code"
+            >
+              Code
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
-
-      <div className="mt-4">
-        <SandpackProvider
-          files={{ "App.tsx": app.trimmedCode }}
-          template="react-ts"
-          theme={dracula}
-          options={{
-            externalResources: [
-              "https://unpkg.com/@tailwindcss/ui/dist/tailwind-ui.min.css",
-            ],
-          }}
-        >
-          <SandpackLayout>
-            <div
-              className={`${selectedTab === "code" ? "" : "hidden"} w-full min-w-0 max-w-full overflow-hidden`}
-            >
-              <SandpackCodeEditor className="h-[60vh] [&_.cm-scroller]:flex-col-reverse" />
-            </div>
-            <div
-              className={`${selectedTab === "preview" ? "" : "hidden"} w-full`}
-            >
-              <SandpackPreview style={{ height: "60vh" }} />
-            </div>
-          </SandpackLayout>
-        </SandpackProvider>
-      </div>
+        <div className="mt-2">
+          <SandpackProvider
+            files={{ "App.tsx": app.trimmedCode }}
+            template="react-ts"
+            theme={dracula}
+            options={{
+              externalResources: [
+                "https://unpkg.com/@tailwindcss/ui/dist/tailwind-ui.min.css",
+              ],
+            }}
+          >
+            <SandpackLayout className="!rounded-none !border-none">
+              <TabsContent
+                value="preview"
+                forceMount
+                className="data-[state=inactive]:hidden"
+              >
+                <SandpackPreview
+                  showNavigator={false}
+                  showOpenInCodeSandbox={false}
+                  showRefreshButton={false}
+                  showRestartButton={false}
+                  showOpenNewtab={false}
+                  className="aspect-square w-full"
+                />
+              </TabsContent>
+              <TabsContent
+                value="code"
+                forceMount
+                className="data-[state=inactive]:hidden"
+              >
+                <SandpackCodeEditor
+                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} `}
+                />
+              </TabsContent>
+            </SandpackLayout>
+          </SandpackProvider>
+        </div>
+      </Tabs>
     </div>
   );
 }
@@ -298,8 +361,9 @@ const saveBattleSchema = z.object({
 });
 
 type State = {
-  battle?: Battle;
   didVote: boolean;
+  battle?: Battle;
+  winners?: App[];
 };
 
 function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
@@ -323,45 +387,130 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
       return {
         battle,
         didVote: true,
+        winners,
       };
     },
     { didVote: false },
   );
 
   return (
-    <div className="flex items-center space-x-4">
-      <form>
-        <fieldset disabled={isPending || state.didVote}>
-          <button
-            formAction={() => {
-              dispatch({ winners: [appA] });
-            }}
-          >
-            A did better
-          </button>
-          <button
-            formAction={() => {
-              dispatch({ winners: [appA, appB] });
-            }}
-          >
-            Both good
-          </button>
-          <button
-            formAction={() => {
-              dispatch({ winners: [] });
-            }}
-          >
-            Both bad
-          </button>
-          <button
-            formAction={() => {
-              dispatch({ winners: [appB] });
-            }}
-          >
-            B did better
-          </button>
-        </fieldset>
-      </form>
+    <div className="mt-16">
+      {!state.didVote ? (
+        <div>
+          <p className="text-center font-title text-2xl font-semibold text-blue-500">
+            Which one did better?
+          </p>
+
+          <form className="mt-6">
+            <fieldset disabled={isPending || state.didVote}>
+              <div className="mx-auto grid max-w-sm grid-cols-2 gap-2">
+                <Button
+                  variant="secondary"
+                  formAction={() => dispatch({ winners: [appA] })}
+                  className="h-auto bg-white px-6 py-5 text-base text-gray-900"
+                >
+                  <span>
+                    <strong className="text-blue-500">A</strong> did better
+                  </span>
+                </Button>
+                <Button
+                  variant="secondary"
+                  formAction={() => dispatch({ winners: [appB] })}
+                  className="h-auto bg-white px-6 py-5 text-base text-gray-900"
+                >
+                  <span>
+                    <strong className="text-blue-500">B</strong> did better
+                  </span>
+                </Button>
+              </div>
+
+              <div className="mx-auto mt-2 grid max-w-xs grid-cols-2 gap-2">
+                <Button
+                  variant="secondary"
+                  formAction={() => dispatch({ winners: [appA, appB] })}
+                  className="h-auto bg-white px-6 py-5 text-base text-gray-900"
+                >
+                  <span>
+                    Both <strong>good</strong>
+                  </span>
+                </Button>
+                <Button
+                  variant="secondary"
+                  formAction={() => dispatch({ winners: [] })}
+                  className="h-auto bg-white px-6 py-5 text-base text-gray-900"
+                >
+                  <span>
+                    Both <strong>bad</strong>
+                  </span>
+                </Button>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1 text-center">
+          <p>
+            <span
+              className={
+                state.winners
+                  ?.map((app) => app.model.apiName)
+                  .includes(appA.model.apiName)
+                  ? "font-bold text-gray-900"
+                  : ""
+              }
+            >
+              Model A:
+            </span>{" "}
+            <strong className="text-blue-500">{appA.model.label}</strong>
+          </p>
+          <p>
+            <span
+              className={
+                state.winners
+                  ?.map((app) => app.model.apiName)
+                  .includes(appB.model.apiName)
+                  ? "font-bold text-gray-900"
+                  : ""
+              }
+            >
+              Model B:
+            </span>{" "}
+            <strong className="text-blue-500">{appB.model.label}</strong>
+          </p>
+
+          <div className="mt-12">
+            <p>Thanks for voting!</p>
+            <p className="text-gray-900">
+              Check out the{" "}
+              <Link
+                href="#"
+                className="text-blue-500 underline underline-offset-[3px]"
+              >
+                leaderboard
+              </Link>{" "}
+              or try again.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-6 flex w-full max-w-xs flex-col gap-2">
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-auto w-full border-blue-500 bg-transparent py-3 font-title text-base font-bold text-blue-500"
+            >
+              <RibbonIcon />
+              See Leaderboard
+            </Button>
+            <Button
+              size="lg"
+              className="h-auto w-full py-3 font-title text-base font-bold"
+            >
+              <SwordsIcon />
+              Launch next battle
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
