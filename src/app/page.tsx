@@ -22,11 +22,12 @@ import saveBattle from "./actions";
 import RibbonIcon from "@/components/icons/ribbon";
 import modelBackgroundImage from "@/public/model-background.png";
 import Image from "next/image";
+import { models } from "./models";
 import Link from "next/link";
 
 type App = {
   clientId: string;
-  model: { label: string; apiName: string };
+  model: (typeof models)[number];
   isLoading: boolean;
   code: string;
   trimmedCode: string;
@@ -108,7 +109,10 @@ export default function Home() {
     ChatCompletionStream.fromReadableStream(resA.body)
       .on("content", (delta) =>
         setAppA((app) => {
-          if (!app) return;
+          if (!app) {
+            console.log("?");
+            return undefined;
+          }
 
           const code = app.code + delta;
           const trimmedCode = trimCode(code);
@@ -131,7 +135,10 @@ export default function Home() {
     ChatCompletionStream.fromReadableStream(resB.body)
       .on("content", (delta) =>
         setAppB((app) => {
-          if (!app) return;
+          if (!app) {
+            console.log("?");
+            return undefined;
+          }
 
           const code = app.code + delta;
           const trimmedCode = trimCode(code);
@@ -224,7 +231,7 @@ export default function Home() {
               type="submit"
               className="inline-flex h-auto w-full py-3 font-title text-base font-bold md:w-auto md:px-6"
             >
-              <SwordsIcon className="size-[88px]" />
+              <SwordsIcon className="size-[18px]" />
               Code Battle
             </Button>
           </div>
@@ -336,7 +343,7 @@ function Result({
                 className="data-[state=inactive]:hidden"
               >
                 <SandpackCodeEditor
-                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} `}
+                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} overflow-hidden`}
                 />
               </TabsContent>
             </SandpackLayout>
@@ -396,7 +403,7 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
   );
 
   return (
-    <div className="mt-16">
+    <div className="mt-16 md:mt-8">
       {!state.didVote ? (
         <div>
           <p className="text-center font-title text-2xl font-semibold text-blue-500">
@@ -451,34 +458,41 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
         </div>
       ) : (
         <div className="flex flex-col gap-1 text-center">
-          <p>
-            <span
-              className={
-                state.winners
-                  ?.map((app) => app.model.apiName)
-                  .includes(appA.model.apiName)
-                  ? "font-bold text-gray-900"
-                  : ""
-              }
-            >
-              Model A:
-            </span>{" "}
-            <strong className="text-blue-500">{appA.model.label}</strong>
-          </p>
-          <p>
-            <span
-              className={
-                state.winners
-                  ?.map((app) => app.model.apiName)
-                  .includes(appB.model.apiName)
-                  ? "font-bold text-gray-900"
-                  : ""
-              }
-            >
-              Model B:
-            </span>{" "}
-            <strong className="text-blue-500">{appB.model.label}</strong>
-          </p>
+          <div className="md:grid md:grid-cols-2">
+            <p>
+              <span
+                className={
+                  state.winners
+                    ?.map((app) => app.model.apiName)
+                    .includes(appA.model.apiName)
+                    ? "font-bold text-gray-900"
+                    : ""
+                }
+              >
+                Model A:
+              </span>{" "}
+              <strong className="font-title text-blue-500">
+                {appA.model.shortLabel}
+              </strong>
+            </p>
+            <p>
+              <span
+                className={
+                  state.winners
+                    ?.map((app) => app.model.apiName)
+                    .includes(appB.model.apiName)
+                    ? "font-bold text-gray-900"
+                    : ""
+                }
+              >
+                Model B:
+              </span>{" "}
+              <strong className="font-title text-blue-500">
+                {appB.model.shortLabel}
+              </strong>
+            </p>
+          </div>
+
           <div>
             <LocalConfetti />
           </div>
@@ -499,12 +513,15 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
 
           <div className="mx-auto mt-6 flex w-full max-w-xs flex-col gap-2">
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="h-auto w-full border-blue-500 bg-transparent py-3 font-title text-base font-bold text-blue-500"
             >
-              <RibbonIcon />
-              See Leaderboard
+              <Link href="/top-models">
+                <RibbonIcon />
+                See Leaderboard
+              </Link>
             </Button>
             <Button
               size="lg"
@@ -519,61 +536,6 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
     </div>
   );
 }
-
-const models = [
-  {
-    label: "Llama 3.1 8B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
-  },
-  {
-    label: "Llama 3.1 70B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-  },
-  {
-    label: "Llama 3.1 405B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-  },
-  // {
-  //   label: "Llama 3.2 11B Vision Instruct Turbo",
-  //   apiName: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
-  // },
-  // {
-  //   label: "Llama 3.2 90B Vision Instruct Turbo",
-  //   apiName: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
-  // },
-  {
-    label: "WizardLM-2 8x22B",
-    apiName: "microsoft/WizardLM-2-8x22B",
-  },
-  {
-    label: "Gemma 2 9B",
-    apiName: "google/gemma-2-9b-it",
-  },
-  {
-    label: "Gemma 2 27B",
-    apiName: "google/gemma-2-27b-it",
-  },
-  {
-    label: "Mixtral-8x22B Instruct (141B)",
-    apiName: "mistralai/Mixtral-8x22B-Instruct-v0.1",
-  },
-  {
-    label: "Qwen 2.5 Coder 32B Instruct",
-    apiName: "Qwen/Qwen2.5-Coder-32B-Instruct",
-  },
-  {
-    label: "Qwen 2.5 72B Instruct Turbo",
-    apiName: "Qwen/Qwen2.5-72B-Instruct-Turbo",
-  },
-  {
-    label: "Llama 3.1 Nemotron 70B",
-    apiName: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
-  },
-  {
-    label: "Nous Hermes 2 - Mixtral 8x7B-DPO (46.7B)",
-    apiName: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
-  },
-];
 
 function getRandomModels() {
   const shuffled = models.sort(() => 0.5 - Math.random());
@@ -594,28 +556,27 @@ function trimCode(code: string) {
 
 function LocalConfetti() {
   const ref = useRef<HTMLDivElement>(null);
-  const [rect, setRect] = useState<{
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  }>();
+  // const [rect, setRect] = useState<{
+  //   x: number;
+  //   y: number;
+  //   w: number;
+  //   h: number;
+  // }>();
   // const [ref, bounds] = useMeasure();
   // console.log(bounds);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const bounds = el.getBoundingClientRect();
-    setRect({
-      x: el.offsetLeft + bounds.width / 2,
-      y: el.offsetTop,
-      w: 100,
-      h: 100,
-    });
+    // const el = ref.current;
+    // if (!el) return;
+    // const bounds = el.getBoundingClientRect();
+    // setRect({
+    //   x: el.offsetLeft + bounds.width / 2,
+    //   y: el.offsetTop,
+    //   w: 100,
+    //   h: 100,
+    // });
   }, []);
 
-  console.log(rect);
+  // console.log(rect);
 
   return (
     <div ref={ref}>

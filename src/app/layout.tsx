@@ -37,7 +37,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-gray-300 text-gray-500 antialiased">
         <header className="px-4 py-2 md:py-5">
           <div className="mx-auto flex max-w-screen-2xl justify-between">
-            <Link href="#">
+            <Link href="/">
               <Logo />
             </Link>
 
@@ -45,7 +45,7 @@ export default function RootLayout({
               asChild
               className="size-8 font-title font-bold md:size-auto"
             >
-              <Link href="#">
+              <Link href="/top-models">
                 <RibbonIcon />
                 <span className="hidden md:inline">Leaderboard</span>
               </Link>
