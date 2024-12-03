@@ -109,7 +109,10 @@ export default function Home() {
     ChatCompletionStream.fromReadableStream(resA.body)
       .on("content", (delta) =>
         setAppA((app) => {
-          if (!app) return;
+          if (!app) {
+            console.log("?");
+            return undefined;
+          }
 
           const code = app.code + delta;
           const trimmedCode = trimCode(code);
@@ -132,7 +135,10 @@ export default function Home() {
     ChatCompletionStream.fromReadableStream(resB.body)
       .on("content", (delta) =>
         setAppB((app) => {
-          if (!app) return;
+          if (!app) {
+            console.log("?");
+            return undefined;
+          }
 
           const code = app.code + delta;
           const trimmedCode = trimCode(code);
@@ -337,7 +343,7 @@ function Result({
                 className="data-[state=inactive]:hidden"
               >
                 <SandpackCodeEditor
-                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} `}
+                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} overflow-hidden`}
                 />
               </TabsContent>
             </SandpackLayout>
@@ -540,28 +546,27 @@ function trimCode(code: string) {
 
 function LocalConfetti() {
   const ref = useRef<HTMLDivElement>(null);
-  const [rect, setRect] = useState<{
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  }>();
+  // const [rect, setRect] = useState<{
+  //   x: number;
+  //   y: number;
+  //   w: number;
+  //   h: number;
+  // }>();
   // const [ref, bounds] = useMeasure();
   // console.log(bounds);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const bounds = el.getBoundingClientRect();
-    setRect({
-      x: el.offsetLeft + bounds.width / 2,
-      y: el.offsetTop,
-      w: 100,
-      h: 100,
-    });
+    // const el = ref.current;
+    // if (!el) return;
+    // const bounds = el.getBoundingClientRect();
+    // setRect({
+    //   x: el.offsetLeft + bounds.width / 2,
+    //   y: el.offsetTop,
+    //   w: 100,
+    //   h: 100,
+    // });
   }, []);
 
-  console.log(rect);
+  // console.log(rect);
 
   return (
     <div ref={ref}>
