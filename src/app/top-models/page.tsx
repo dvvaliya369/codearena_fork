@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { apps } from "@/schema";
-import { count, desc, sql, sum } from "drizzle-orm";
+import { apps, battles } from "@/schema";
+import { count, countDistinct, desc, sql, sum } from "drizzle-orm";
 import { MoveUpRightIcon } from "lucide-react";
 
 import {
@@ -15,6 +15,10 @@ import {
 import { models } from "../models";
 
 export default async function Page() {
+  const [{ totalUsers }] = await db
+    .select({ totalUsers: countDistinct(battles.creatorCookie) })
+    .from(battles);
+
   const results = await db
     .select({
       model: apps.model,
@@ -35,8 +39,35 @@ export default async function Page() {
     .orderBy(desc(sql`win_percentage`));
 
   return (
-    <div>
-      <h1>Top models</h1>
+    <div className="mx-auto max-w-2xl px-4">
+      <h1 className="text-center uppercase">
+        Top models <span className="text-blue-500">[all time]</span>
+      </h1>
+
+      <div className="mt-12 flex items-center justify-between border border-gray-100 px-12 py-5 tracking-[-0.02em] text-gray-900">
+        <div className="text-center">
+          <div className="font-title text-xl font-semibold">
+            {results.length}
+          </div>
+          <div className="text-sm"># of models</div>
+        </div>
+        <div className="text-center">
+          <div className="font-title text-xl font-semibold">
+            {results.reduce((total, row) => total + row.wins, 0)}
+          </div>
+          <div className="text-sm"># of votes</div>
+        </div>
+        <div className="text-center">
+          <div className="font-title text-xl font-semibold">
+            {results.reduce((total, row) => total + row.games, 0)}
+          </div>
+          <div className="text-sm"># games played</div>
+        </div>
+        <div className="text-center">
+          <div className="font-title text-xl font-semibold">{totalUsers}</div>
+          <div className="text-sm"># of users</div>
+        </div>
+      </div>
 
       <Table>
         <TableHeader>
