@@ -27,7 +27,7 @@ import Link from "next/link";
 
 type App = {
   clientId: string;
-  model: { label: string; apiName: string };
+  model: (typeof models)[number];
   isLoading: boolean;
   code: string;
   trimmedCode: string;
@@ -403,7 +403,7 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
   );
 
   return (
-    <div className="mt-16">
+    <div className="mt-16 md:mt-8">
       {!state.didVote ? (
         <div>
           <p className="text-center font-title text-2xl font-semibold text-blue-500">
@@ -458,34 +458,41 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
         </div>
       ) : (
         <div className="flex flex-col gap-1 text-center">
-          <p>
-            <span
-              className={
-                state.winners
-                  ?.map((app) => app.model.apiName)
-                  .includes(appA.model.apiName)
-                  ? "font-bold text-gray-900"
-                  : ""
-              }
-            >
-              Model A:
-            </span>{" "}
-            <strong className="text-blue-500">{appA.model.label}</strong>
-          </p>
-          <p>
-            <span
-              className={
-                state.winners
-                  ?.map((app) => app.model.apiName)
-                  .includes(appB.model.apiName)
-                  ? "font-bold text-gray-900"
-                  : ""
-              }
-            >
-              Model B:
-            </span>{" "}
-            <strong className="text-blue-500">{appB.model.label}</strong>
-          </p>
+          <div className="md:grid md:grid-cols-2">
+            <p>
+              <span
+                className={
+                  state.winners
+                    ?.map((app) => app.model.apiName)
+                    .includes(appA.model.apiName)
+                    ? "font-bold text-gray-900"
+                    : ""
+                }
+              >
+                Model A:
+              </span>{" "}
+              <strong className="font-title text-blue-500">
+                {appA.model.shortLabel}
+              </strong>
+            </p>
+            <p>
+              <span
+                className={
+                  state.winners
+                    ?.map((app) => app.model.apiName)
+                    .includes(appB.model.apiName)
+                    ? "font-bold text-gray-900"
+                    : ""
+                }
+              >
+                Model B:
+              </span>{" "}
+              <strong className="font-title text-blue-500">
+                {appB.model.shortLabel}
+              </strong>
+            </p>
+          </div>
+
           <div>
             <LocalConfetti />
           </div>
@@ -506,12 +513,15 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
 
           <div className="mx-auto mt-6 flex w-full max-w-xs flex-col gap-2">
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="h-auto w-full border-blue-500 bg-transparent py-3 font-title text-base font-bold text-blue-500"
             >
-              <RibbonIcon />
-              See Leaderboard
+              <Link href="/top-models">
+                <RibbonIcon />
+                See Leaderboard
+              </Link>
             </Button>
             <Button
               size="lg"
