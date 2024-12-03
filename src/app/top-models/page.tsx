@@ -184,7 +184,11 @@ function ResultCard({
       </div>
       <div className="w-3/5">
         <div className="flex items-center gap-2">
-          <Image src={model.logo} alt="" className="size-6 shrink-0" />
+          <Image
+            src={model.logo}
+            alt=""
+            className="size-6 shrink-0 object-contain"
+          />
           <p className="truncate font-title text-xl text-gray-900">
             {model.shortLabel}
           </p>
