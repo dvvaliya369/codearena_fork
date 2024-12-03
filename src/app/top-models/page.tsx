@@ -218,3 +218,5 @@ function ResultCard({
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
