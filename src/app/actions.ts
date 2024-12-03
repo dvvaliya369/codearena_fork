@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { apps, battles } from "@/schema";
+import { cookies } from "next/headers";
 
 type App = {
   model: { label: string; apiName: string };
@@ -18,8 +19,7 @@ export default async function saveBattle({
   winners: App[];
   losers: App[];
 }) {
-  // TODO read cookie if it exists, otherwise create one
-  const creatorCookie = "TODO";
+  const creatorCookie = await findOrCreateCreatorCookie();
 
   const result = await db
     .insert(battles)
@@ -52,4 +52,14 @@ export default async function saveBattle({
   }
 
   return battle;
+}
+
+async function findOrCreateCreatorCookie() {
+  const cookieStore = await cookies();
+  let creatorId = cookieStore.get("creatorCookie")?.value;
+  if (!creatorId) {
+    creatorId = crypto.randomUUID();
+    cookieStore.set("creatorCookie", creatorId, { maxAge: 60 * 60 * 24 * 365 });
+  }
+  return creatorId;
 }
