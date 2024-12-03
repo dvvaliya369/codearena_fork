@@ -45,7 +45,7 @@ export default async function Page() {
         Top models <span className="text-blue-500">[all time]</span>
       </h1>
 
-      <div className="border-gray-100 mt-8 grid grid-cols-2 items-center justify-between gap-5 border p-5 tracking-[-0.02em] text-gray-900">
+      <div className="border-gray-100 mt-8 grid grid-cols-2 items-center justify-between gap-5 border p-5 tracking-[-0.02em] text-gray-900 md:grid-cols-4">
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.length}
@@ -70,7 +70,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-4">
+      <div className="mt-4 flex flex-col gap-4 md:hidden">
         {results.map((result, index) => (
           <ResultCard result={result} index={index} key={result.model} />
         ))}
