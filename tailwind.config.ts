@@ -26,6 +26,9 @@ export default {
       },
     },
     extend: {
+      screens: {
+        "2xl": "1440px",
+      },
       fontFamily: {
         title: ["var(--font-tektur)"],
         sans: ["var(--font-plus-jakarta-sans)"],

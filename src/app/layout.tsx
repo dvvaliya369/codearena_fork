@@ -32,11 +32,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${tektur.variable} ${plusJakartaSans.variable}`}
+      className={`${tektur.variable} ${plusJakartaSans.variable} h-full`}
     >
-      <body className="bg-gray-300 text-gray-500 antialiased">
+      <body className="flex min-h-full flex-col bg-gray-300 text-gray-500 antialiased">
         <header className="px-4 py-2 md:py-5">
-          <div className="mx-auto flex max-w-7xl justify-between">
+          <div className="mx-auto flex max-w-screen-2xl justify-between">
             <Link href="#">
               <Logo />
             </Link>
@@ -53,10 +53,10 @@ export default function RootLayout({
           </div>
         </header>
 
-        <main className="px-4 py-8">{children}</main>
+        <main className="grow px-4 py-8">{children}</main>
 
-        <footer className="mt-16 px-2 py-2 md:py-8">
-          <div className="mx-auto flex w-full max-w-7xl items-center justify-between">
+        <footer className="mt-16 px-2 py-2 md:px-4 md:py-8">
+          <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between">
             <p className="text-xs md:text-sm">Powered by Together.ai</p>
             <div className="inline-flex items-center gap-2">
               <Button

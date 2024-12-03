@@ -152,16 +152,17 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-screen-2xl">
       <div className="text-center">
-        <h1 className="mt-8 font-title text-2xl font-bold tracking-[-.01em] text-gray-900">
+        <h1 className="mt-8 font-title text-2xl font-bold tracking-[-.01em] text-gray-900 md:text-4xl">
           Which LLM Codes the Best?
         </h1>
-        <p className="mt-2 text-balance text-sm tracking-[-.01em] text-gray-500">
+        <p className="mx-auto mt-2 max-w-md text-balance text-sm tracking-[-.01em] text-gray-500 md:text-base">
           Watch AI models compete in real-time, and see who emerges victorious.
         </p>
       </div>
-      <form onSubmit={handleSubmit} className="mt-4">
+
+      <form onSubmit={handleSubmit} className="mx-auto mt-4 max-w-2xl md:mt-8">
         <fieldset disabled={status === "generating"}>
           {/* <div>
             <select
@@ -177,7 +178,7 @@ export default function Home() {
             </select>
           </div> */}
 
-          <div className="relative">
+          <div className="relative mx-auto max-w-lg">
             <input
               className="w-full border border-gray-300 px-4 py-5"
               name="prompt"
@@ -216,20 +217,19 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-10">
+          <div className="mt-10 text-center">
             <Button
               type="submit"
-              className="inline-flex h-auto w-full py-3 font-title text-base font-bold"
+              className="inline-flex h-auto w-full py-3 font-title text-base font-bold md:w-auto md:px-6"
             >
               <SwordsIcon className="size-[88px]" />
-              {/* <ArrowsIcon className="size-[88px]" /> */}
               Code Battle
             </Button>
           </div>
         </fieldset>
       </form>
       <div>
-        <div className="mt-8 grid gap-4 md:grid-cols-2 md:gap-8">
+        <div className="mt-8 grid gap-4 md:mt-20 md:grid-cols-2 md:gap-8">
           <Result
             app={appA}
             selectedTab={selectedTabA}
@@ -270,7 +270,7 @@ function Result({
           priority
           src={modelBackgroundImage}
           alt=""
-          className="aspect-square object-contain"
+          className="aspect-square object-contain md:aspect-video"
         />
         <div className="absolute inset-x-0 top-[60%] flex items-center justify-center">
           <p className="text-lg text-gray-900">{placeholder}</p>
@@ -282,12 +282,12 @@ function Result({
   return (
     <div>
       <Tabs value={selectedTab} onValueChange={onTabSelect}>
-        <div className="flex items-center justify-between">
-          <p className="truncate text-center text-gray-900">
+        <div className="relative flex items-center">
+          <p className="absolute truncate text-center text-gray-900 lg:w-full">
             {placeholder}
             {/* {app.model.label} */}
           </p>
-          <TabsList className="h-auto bg-white p-0">
+          <TabsList className="relative ml-auto h-auto bg-white p-0">
             <TabsTrigger
               className="border border-r-0 border-gray-500 data-[state=active]:border-black data-[state=active]:bg-black data-[state=active]:text-white"
               value="preview"
