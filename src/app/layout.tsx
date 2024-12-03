@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GithubIcon from "@/components/icons/github";
 import XIcon from "@/components/icons/x";
+import RibbonIcon from "@/components/icons/ribbon";
 
 const tektur = Tektur({
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -31,32 +32,54 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${tektur.variable} ${plusJakartaSans.variable}`}
+      className={`${tektur.variable} ${plusJakartaSans.variable} h-full`}
     >
-      <body className="bg-gray-300 text-gray-500 antialiased">
-        <header className="px-4 py-2">
-          <Logo />
+      <body className="flex min-h-full flex-col bg-gray-300 text-gray-500 antialiased">
+        <header className="px-4 py-2 md:py-5">
+          <div className="mx-auto flex max-w-screen-2xl justify-between">
+            <Link href="#">
+              <Logo />
+            </Link>
+
+            <Button
+              asChild
+              className="size-8 font-title font-bold md:size-auto"
+            >
+              <Link href="#">
+                <RibbonIcon />
+                <span className="hidden md:inline">Leaderboard</span>
+              </Link>
+            </Button>
+          </div>
         </header>
 
-        <main className="px-4 py-8">{children}</main>
+        <main className="grow px-4 py-8">{children}</main>
 
-        <footer className="mt-16 flex w-full items-center justify-between p-2">
-          <p className="text-xs">Powered by Together.ai</p>
-
-          <div className="inline-flex items-center gap-2">
-            <Button size="sm" variant="ghost" className="border" asChild>
-              <Link href="#">
-                <GithubIcon />
-                GitHub
-              </Link>
-            </Button>
-
-            <Button size="sm" variant="ghost" className="border" asChild>
-              <Link href="#">
-                <XIcon />
-                Twitter
-              </Link>
-            </Button>
+        <footer className="mt-16 px-2 py-2 md:px-4 md:py-8">
+          <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between">
+            <p className="text-xs md:text-sm">Powered by Together.ai</p>
+            <div className="inline-flex items-center gap-2">
+              <Button
+                variant="ghost"
+                className="rounded-md border border-gray-500 px-3 text-xs"
+                asChild
+              >
+                <Link href="#">
+                  <GithubIcon />
+                  GitHub
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                className="rounded-md border border-gray-500 px-3 text-xs"
+                asChild
+              >
+                <Link href="#">
+                  <XIcon />
+                  Twitter
+                </Link>
+              </Button>
+            </div>
           </div>
         </footer>
       </body>

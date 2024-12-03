@@ -16,7 +16,6 @@ export default {
     colors: {
       ...rest,
       gray: {
-        "100": "#DADADA",
         "200": "#FAF8F5",
         "300": "#F6F2EC",
         "500": "#898989",
@@ -27,6 +26,9 @@ export default {
       },
     },
     extend: {
+      screens: {
+        "2xl": "1440px",
+      },
       fontFamily: {
         title: ["var(--font-tektur)"],
         sans: ["var(--font-plus-jakarta-sans)"],
