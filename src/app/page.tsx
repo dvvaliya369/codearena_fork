@@ -255,7 +255,15 @@ export default function Home() {
       </div>
 
       {status === "complete" && appA && appB && (
-        <Vote prompt={prompt} apps={[appA, appB]} />
+        <Vote
+          prompt={prompt}
+          apps={[appA, appB]}
+          onLaunchNextBattle={() => {
+            setStatus("idle");
+            setAppA(undefined);
+            setAppB(undefined);
+          }}
+        />
       )}
     </div>
   );
@@ -294,7 +302,6 @@ function Result({
         <div className="relative flex items-center">
           <p className="absolute truncate text-center text-gray-900 lg:w-full">
             {placeholder}
-            {/* {app.model.label} */}
           </p>
           <TabsList className="relative ml-auto h-auto bg-white p-0">
             <TabsTrigger
@@ -375,7 +382,15 @@ type State = {
   winners?: App[];
 };
 
-function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
+function Vote({
+  prompt,
+  apps,
+  onLaunchNextBattle,
+}: {
+  prompt: string;
+  apps: [App, App];
+  onLaunchNextBattle: () => void;
+}) {
   const [appA, appB] = apps;
 
   const [state, dispatch, isPending] = useActionState<
@@ -526,6 +541,7 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
             <Button
               size="lg"
               className="h-auto w-full py-3 font-title text-base font-bold"
+              onClick={onLaunchNextBattle}
             >
               <SwordsIcon />
               Launch next battle
