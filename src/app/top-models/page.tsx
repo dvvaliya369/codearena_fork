@@ -39,11 +39,11 @@ export default async function Page() {
 
   return (
     <div className="mx-auto max-w-2xl px-4">
-      <h1 className="text-center uppercase">
+      <h1 className="text-center font-title text-2xl font-bold uppercase text-gray-900">
         Top models <span className="text-blue-500">[all time]</span>
       </h1>
 
-      <div className="mt-12 flex items-center justify-between border border-gray-100 px-12 py-5 tracking-[-0.02em] text-gray-900">
+      <div className="border-gray-100 mt-12 flex items-center justify-between border px-12 py-5 tracking-[-0.02em] text-gray-900">
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.length}
