@@ -133,7 +133,11 @@ function ResultRow({
         {index + 1}.
       </TableCell>
       <TableCell className="inline-flex items-center gap-1 text-sm text-gray-900">
-        <Image src={model.logo} alt="" className="size-10 shrink-0" />
+        <Image
+          src={model.logo}
+          alt=""
+          className="size-10 shrink-0 object-contain"
+        />
         {model.shortLabel}
       </TableCell>
       <TableCell className="text-center">
