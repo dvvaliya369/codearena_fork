@@ -16,6 +16,7 @@ export default {
     colors: {
       ...rest,
       gray: {
+        "100": "#D9D9D9",
         "200": "#FAF8F5",
         "300": "#F6F2EC",
         "500": "#898989",
