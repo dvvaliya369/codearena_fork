@@ -2,7 +2,10 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import Confetti from "react-confetti";
+
 import SwordsIcon from "@/components/icons/swords";
+import { Button } from "@/components/ui/button";
 import { Battle } from "@/schema";
 import {
   SandpackCodeEditor,
@@ -11,16 +14,15 @@ import {
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
 import { dracula } from "@codesandbox/sandpack-themes";
-import { FormEvent, useActionState, useState } from "react";
+import { FormEvent, useActionState, useEffect, useRef, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { z } from "zod";
 import saveBattle from "./actions";
-import { Button } from "@/components/ui/button";
 // import ArrowsIcon from "@/components/icons/arrows";
+import RibbonIcon from "@/components/icons/ribbon";
 import modelBackgroundImage from "@/public/model-background.png";
 import Image from "next/image";
 import Link from "next/link";
-import RibbonIcon from "@/components/icons/ribbon";
 
 type App = {
   clientId: string;
@@ -477,6 +479,9 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
             </span>{" "}
             <strong className="text-blue-500">{appB.model.label}</strong>
           </p>
+          <div>
+            <LocalConfetti />
+          </div>
 
           <div className="mt-12">
             <p>Thanks for voting!</p>
@@ -585,4 +590,42 @@ function trimCode(code: string) {
     : trimmedCode;
 
   return trimmedCode;
+}
+
+function LocalConfetti() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [rect, setRect] = useState<{
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }>();
+  // const [ref, bounds] = useMeasure();
+  // console.log(bounds);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const bounds = el.getBoundingClientRect();
+    setRect({
+      x: el.offsetLeft + bounds.width / 2,
+      y: el.offsetTop,
+      w: 100,
+      h: 100,
+    });
+  }, []);
+
+  console.log(rect);
+
+  return (
+    <div ref={ref}>
+      <Confetti
+        recycle={false}
+        // confettiSource={rect}
+        height={2000}
+        width={2000}
+        confettiSource={{ x: 1200, y: 1400, w: 100, h: 100 }}
+      />
+    </div>
+  );
 }
