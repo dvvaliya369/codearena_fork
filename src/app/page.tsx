@@ -22,6 +22,7 @@ import saveBattle from "./actions";
 import RibbonIcon from "@/components/icons/ribbon";
 import modelBackgroundImage from "@/public/model-background.png";
 import Image from "next/image";
+import { models } from "./models";
 import Link from "next/link";
 
 type App = {
@@ -519,61 +520,6 @@ function Vote({ prompt, apps }: { prompt: string; apps: [App, App] }) {
     </div>
   );
 }
-
-const models = [
-  {
-    label: "Llama 3.1 8B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
-  },
-  {
-    label: "Llama 3.1 70B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-  },
-  {
-    label: "Llama 3.1 405B Instruct Turbo",
-    apiName: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-  },
-  // {
-  //   label: "Llama 3.2 11B Vision Instruct Turbo",
-  //   apiName: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
-  // },
-  // {
-  //   label: "Llama 3.2 90B Vision Instruct Turbo",
-  //   apiName: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
-  // },
-  {
-    label: "WizardLM-2 8x22B",
-    apiName: "microsoft/WizardLM-2-8x22B",
-  },
-  {
-    label: "Gemma 2 9B",
-    apiName: "google/gemma-2-9b-it",
-  },
-  {
-    label: "Gemma 2 27B",
-    apiName: "google/gemma-2-27b-it",
-  },
-  {
-    label: "Mixtral-8x22B Instruct (141B)",
-    apiName: "mistralai/Mixtral-8x22B-Instruct-v0.1",
-  },
-  {
-    label: "Qwen 2.5 Coder 32B Instruct",
-    apiName: "Qwen/Qwen2.5-Coder-32B-Instruct",
-  },
-  {
-    label: "Qwen 2.5 72B Instruct Turbo",
-    apiName: "Qwen/Qwen2.5-72B-Instruct-Turbo",
-  },
-  {
-    label: "Llama 3.1 Nemotron 70B",
-    apiName: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",
-  },
-  {
-    label: "Nous Hermes 2 - Mixtral 8x7B-DPO (46.7B)",
-    apiName: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
-  },
-];
 
 function getRandomModels() {
   const shuffled = models.sort(() => 0.5 - Math.random());
