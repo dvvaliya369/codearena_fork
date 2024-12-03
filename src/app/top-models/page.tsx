@@ -20,6 +20,8 @@ export default async function Page() {
     .select({ totalUsers: countDistinct(battles.creatorCookie) })
     .from(battles);
 
+  const battlesCount = await db.$count(battles);
+
   const results = await db
     .select({
       model: apps.model,
@@ -59,9 +61,7 @@ export default async function Page() {
           <div className="text-sm text-gray-500"># of votes</div>
         </div>
         <div className="text-center">
-          <div className="font-title text-xl font-semibold">
-            {results.reduce((total, row) => total + row.games, 0)}
-          </div>
+          <div className="font-title text-xl font-semibold">{battlesCount}</div>
           <div className="text-sm text-gray-500"># games played</div>
         </div>
         <div className="text-center">
@@ -76,41 +76,80 @@ export default async function Page() {
         ))}
       </div>
 
-      {/* <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead></TableHead>
-            <TableHead>Model</TableHead>
-            <TableHead>Organization</TableHead>
-            <TableHead>Total games</TableHead>
-            <TableHead>Win %</TableHead>
-            <TableHead className="text-right">Playground</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {results.map((result, index) => (
-            <TableRow key={result.model}>
-              <TableCell>{index + 1}.</TableCell>
-              <TableCell className="font-medium">{result.model}</TableCell>
-              <TableCell>
-                {models.find((m) => m.apiName === result.model)?.organization}
-              </TableCell>
-              <TableCell>{result.games}</TableCell>
-              <TableCell>{result.winPercentage}%</TableCell>
-              <TableCell>
-                <a
-                  href={`https://api.together.ai/playground/chat/${result.model}`}
-                  target="_blank"
-                  className="flex items-center justify-end"
-                >
-                  <MoveUpRightIcon className="size-6 bg-blue-500 p-1 text-white" />
-                </a>
-              </TableCell>
+      <div className="mt-4 hidden md:flex">
+        <Table className="border-gray-100 border">
+          <TableHeader>
+            <TableRow>
+              <TableHead></TableHead>
+              <TableHead className="w-full whitespace-nowrap text-xs text-gray-500">
+                Model
+              </TableHead>
+              <TableHead className="whitespace-nowrap text-center text-xs text-gray-500">
+                Organization
+              </TableHead>
+              <TableHead className="whitespace-nowrap text-center text-xs text-gray-500">
+                Total games
+              </TableHead>
+              <TableHead className="whitespace-nowrap text-xs text-gray-500">
+                Win %
+              </TableHead>
+              <TableHead className="whitespace-nowrap text-xs text-gray-500">
+                Playground
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table> */}
+          </TableHeader>
+          <TableBody>
+            {results.map((result, index) => (
+              <ResultRow key={result.model} result={result} index={index} />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
+  );
+}
+
+function ResultRow({
+  result,
+  index,
+}: {
+  result: {
+    model: string;
+    wins: number;
+    losses: number;
+    games: number;
+    winPercentage: number;
+  };
+  index: number;
+}) {
+  const model = models.find((m) => m.apiName === result.model);
+  if (!model) return;
+
+  return (
+    <TableRow key={result.model} className="font-title tracking-[-.02em]">
+      <TableCell className="font-title text-xs">{index + 1}.</TableCell>
+      <TableCell className="inline-flex items-center gap-1 text-sm text-gray-900">
+        <Image src={model.logo} alt="" className="size-10 shrink-0" />
+        {model.shortLabel}
+      </TableCell>
+      <TableCell className="text-center">
+        {models.find((m) => m.apiName === result.model)?.organization}
+      </TableCell>
+      <TableCell className="text-center">{result.games}</TableCell>
+      <TableCell className="font-medium text-gray-900">
+        {result.winPercentage}%
+      </TableCell>
+      <TableCell>
+        <Button asChild className="mx-auto flex size-6 p-0">
+          <Link
+            href={`https://api.together.xyz/playground/chat/${result.model}`}
+            target="_blank"
+          >
+            <UpRightArrow className="size-2.5" />
+          </Link>
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 }
 
