@@ -45,7 +45,7 @@ export default function RootLayout({
               asChild
               className="size-8 font-title font-bold md:size-auto"
             >
-              <Link href="#">
+              <Link href="/top-models">
                 <RibbonIcon />
                 <span className="hidden md:inline">Leaderboard</span>
               </Link>
