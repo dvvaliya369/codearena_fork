@@ -172,7 +172,7 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto max-w-screen-2xl">
+    <div className="mx-auto w-full max-w-screen-2xl">
       <div className="text-center">
         <h1 className="mt-8 font-title text-2xl font-bold tracking-[-.01em] text-gray-900 md:text-4xl">
           Which LLM Codes the Best?
