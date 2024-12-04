@@ -203,6 +203,7 @@ export default function Home() {
               className="w-full border border-gray-300 px-4 py-5"
               name="prompt"
               placeholder="Enter a prompt"
+              required
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
