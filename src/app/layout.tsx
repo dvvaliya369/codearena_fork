@@ -7,6 +7,7 @@ import Link from "next/link";
 import GithubIcon from "@/components/icons/github";
 import XIcon from "@/components/icons/x";
 import RibbonIcon from "@/components/icons/ribbon";
+import DotsBackground from "@/public/dots-background.png";
 
 const tektur = Tektur({
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -34,7 +35,14 @@ export default function RootLayout({
       lang="en"
       className={`${tektur.variable} ${plusJakartaSans.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col bg-gray-300 text-gray-500 antialiased">
+      <body className="relative flex min-h-full flex-col bg-gray-300 text-gray-500 antialiased">
+        <div
+          style={{
+            backgroundImage: `url(${DotsBackground.src})`,
+          }}
+          className="absolute inset-x-0 -z-10 flex h-[456px] items-center justify-center bg-contain bg-center"
+        ></div>
+
         <header className="px-4 py-2 md:py-5">
           <div className="mx-auto flex max-w-screen-2xl justify-between">
             <Link href="/">
