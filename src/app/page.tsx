@@ -1,9 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import Confetti from "react-confetti";
-
+import party from "party-js";
 import SwordsIcon from "@/components/icons/swords";
 import { Button } from "@/components/ui/button";
 import { Battle } from "@/schema";
@@ -14,16 +12,23 @@ import {
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
 import { dracula } from "@codesandbox/sandpack-themes";
-import { FormEvent, useActionState, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  ReactNode,
+  Ref,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { z } from "zod";
 import saveBattle from "./actions";
-// import ArrowsIcon from "@/components/icons/arrows";
 import RibbonIcon from "@/components/icons/ribbon";
 import modelBackgroundImage from "@/public/model-background.png";
 import Image from "next/image";
-import { models } from "./models";
 import Link from "next/link";
+import { models } from "./models";
 
 type App = {
   clientId: string;
@@ -508,13 +513,23 @@ function Vote({
             </p>
           </div>
 
-          <div>
-            <LocalConfetti />
-          </div>
-
           <div className="mt-12">
-            <p>Thanks for voting!</p>
+            <div className="flex justify-center">
+              <Confetti>{(ref) => <div ref={ref} />}</Confetti>
+            </div>
+
             <p className="text-gray-900">
+              {state.winners?.length === 1 ? (
+                <>{state.winners[0].model.shortLabel} wins!</>
+              ) : state.winners?.length === 2 ? (
+                <>Both models won!</>
+              ) : (
+                <>Neither model won.</>
+              )}
+            </p>
+
+            <p className="mt-8">Thanks for voting!</p>
+            <p className="text-gray-900 md:hidden">
               Check out the{" "}
               <Link
                 href="#"
@@ -570,39 +585,20 @@ function trimCode(code: string) {
   return trimmedCode;
 }
 
-function LocalConfetti() {
-  const ref = useRef<HTMLDivElement>(null);
-  // const [rect, setRect] = useState<{
-  //   x: number;
-  //   y: number;
-  //   w: number;
-  //   h: number;
-  // }>();
-  // const [ref, bounds] = useMeasure();
-  // console.log(bounds);
+function Confetti({
+  children,
+}: {
+  children: (ref: Ref<HTMLParagraphElement>) => ReactNode;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const hasRun = useRef(false);
+
   useEffect(() => {
-    // const el = ref.current;
-    // if (!el) return;
-    // const bounds = el.getBoundingClientRect();
-    // setRect({
-    //   x: el.offsetLeft + bounds.width / 2,
-    //   y: el.offsetTop,
-    //   w: 100,
-    //   h: 100,
-    // });
+    if (!ref.current || hasRun.current) return;
+
+    party.confetti(ref.current, { count: 100 });
+    hasRun.current = true;
   }, []);
 
-  // console.log(rect);
-
-  return (
-    <div ref={ref}>
-      <Confetti
-        recycle={false}
-        // confettiSource={rect}
-        height={2000}
-        width={2000}
-        confettiSource={{ x: 1200, y: 1400, w: 100, h: 100 }}
-      />
-    </div>
-  );
+  return children(ref);
 }
