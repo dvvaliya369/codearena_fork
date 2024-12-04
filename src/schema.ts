@@ -6,6 +6,7 @@ import {
   text,
   boolean,
   timestamp,
+  index,
 } from "drizzle-orm/pg-core";
 
 const timestamps = {
@@ -15,12 +16,20 @@ const timestamps = {
     .$onUpdate(() => new Date()),
 };
 
-export const battles = pgTable("battles", {
-  id: serial("id").primaryKey(),
-  prompt: text("prompt").notNull(),
-  creatorCookie: text("creator_cookie_id").notNull(),
-  ...timestamps,
-});
+export const battles = pgTable(
+  "battles",
+  {
+    id: serial("id").primaryKey(),
+    prompt: text("prompt").notNull(),
+    creatorCookie: text("creator_cookie_id").notNull(),
+    ...timestamps,
+  },
+  (table) => {
+    return {
+      creatorCookieIdx: index("creator_cookie_idx").on(table.creatorCookie),
+    };
+  },
+);
 
 export type Battle = typeof battles.$inferSelect;
 
