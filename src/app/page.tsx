@@ -29,6 +29,7 @@ import modelBackgroundImage from "@/public/model-background.png";
 import Image from "next/image";
 import Link from "next/link";
 import { models } from "./models";
+import assert from "assert";
 
 type App = {
   clientId: string;
@@ -44,6 +45,7 @@ export default function Home() {
     "idle",
   );
   const [prompt, setPrompt] = useState("A todo app");
+  const [submittedPrompt, setSubmittedPrompt] = useState("");
   const [appA, setAppA] = useState<App>();
   const [appB, setAppB] = useState<App>();
   const [selectedTabA, setSelectedTabA] = useState("code");
@@ -59,7 +61,11 @@ export default function Home() {
     const prompt = formData.get("prompt");
     const testModel = formData.get("testModel");
 
+    assert.ok(typeof prompt === "string");
+
     setStatus("generating");
+    setSubmittedPrompt(prompt);
+
     let modelA, modelB;
 
     if (testModel) {
@@ -243,7 +249,10 @@ export default function Home() {
         </fieldset>
       </form>
       <div>
-        <div className="mt-8 grid gap-4 md:mt-20 md:grid-cols-2 md:gap-8">
+        <div
+          key={submittedPrompt}
+          className="mt-8 grid gap-4 md:mt-20 md:grid-cols-2 md:gap-8"
+        >
           <Result
             app={appA}
             selectedTab={selectedTabA}
@@ -261,7 +270,7 @@ export default function Home() {
 
       {status === "complete" && appA && appB && (
         <Vote
-          prompt={prompt}
+          prompt={submittedPrompt}
           apps={[appA, appB]}
           onLaunchNextBattle={() => {
             setStatus("idle");
