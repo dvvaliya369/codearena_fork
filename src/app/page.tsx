@@ -364,7 +364,7 @@ function Result({
                 className="data-[state=inactive]:hidden"
               >
                 <SandpackCodeEditor
-                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} overflow-hidden`}
+                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} overflow-hidden [&_.cm-line]:text-[13px]`}
                 />
               </TabsContent>
             </SandpackLayout>
