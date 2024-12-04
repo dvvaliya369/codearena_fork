@@ -2,7 +2,7 @@ import LlamaLogo from "@/public/models/llama.png";
 import MixtralLogo from "@/public/models/mixtral.png";
 import QwenLogo from "@/public/models/qwen.png";
 import GemmaLogo from "@/public/models/gemma.png";
-import WizardLmLogo from "@/public/models/wizardlm.png";
+// import WizardLmLogo from "@/public/models/wizardlm.png";
 import NemotronLogo from "@/public/models/nemotron.png";
 import NousHermesLogo from "@/public/models/noushermes.webp";
 
@@ -36,13 +36,13 @@ export const models = [
   //   label: "Llama 3.2 90B Vision Instruct Turbo",
   //   apiName: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
   // },
-  {
-    label: "WizardLM-2 8x22B",
-    shortLabel: "WizardLM-2 8x22B",
-    organization: "Microsoft",
-    logo: WizardLmLogo,
-    apiName: "microsoft/WizardLM-2-8x22B",
-  },
+  // {
+  //   label: "WizardLM-2 8x22B",
+  //   shortLabel: "WizardLM-2 8x22B",
+  //   organization: "Microsoft",
+  //   logo: WizardLmLogo,
+  //   apiName: "microsoft/WizardLM-2-8x22B",
+  // },
   {
     label: "Gemma 2 9B",
     shortLabel: "Gemma 2 9B",
