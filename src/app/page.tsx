@@ -38,6 +38,8 @@ type App = {
   code: string;
   trimmedCode: string;
   status: "idle" | "generating" | "complete";
+  completionTokens?: number;
+  totalTime?: number;
 };
 
 export default function Home() {
@@ -97,6 +99,8 @@ export default function Home() {
     });
 
     // create a stream for each model
+    const startTime = new Date();
+
     const [resA, resB] = await Promise.all([
       fetch("/api/generate-app", {
         method: "POST",
@@ -131,10 +135,24 @@ export default function Home() {
           return { ...app, code, trimmedCode };
         }),
       )
+      .on("totalUsage", (usage) => {
+        setAppA((app) =>
+          app
+            ? {
+                ...app,
+                completionTokens: usage.completion_tokens,
+              }
+            : undefined,
+        );
+      })
       .on("end", () => {
         setAppA((app) =>
           app
-            ? { ...app, status: "complete", selectedTab: "preview" }
+            ? {
+                ...app,
+                status: "complete",
+                totalTime: new Date().getTime() - startTime.getTime(),
+              }
             : undefined,
         );
         setSelectedTabA("preview");
@@ -157,10 +175,24 @@ export default function Home() {
           return { ...app, code, trimmedCode };
         }),
       )
+      .on("totalUsage", (usage) => {
+        setAppB((app) =>
+          app
+            ? {
+                ...app,
+                completionTokens: usage.completion_tokens,
+              }
+            : undefined,
+        );
+      })
       .on("end", () => {
         setAppB((app) =>
           app
-            ? { ...app, status: "complete", selectedTab: "preview" }
+            ? {
+                ...app,
+                status: "complete",
+                totalTime: new Date().getTime() - startTime.getTime(),
+              }
             : undefined,
         );
         setSelectedTabB("preview");
@@ -383,6 +415,8 @@ const savableAppSchema = z.object({
   }),
   code: z.string(),
   trimmedCode: z.string(),
+  totalTime: z.number(),
+  completionTokens: z.number(),
 });
 
 const saveBattleSchema = z.object({

@@ -8,6 +8,8 @@ type App = {
   model: { label: string; apiName: string };
   code: string;
   trimmedCode: string;
+  completionTokens: number;
+  totalTime: number;
 };
 
 export default async function saveBattle({
@@ -37,6 +39,8 @@ export default async function saveBattle({
       model: winner.model.apiName,
       code: winner.code,
       trimmedCode: winner.trimmedCode,
+      completionTokens: winner.completionTokens,
+      totalTime: winner.totalTime,
       didWin: true,
     });
   }
@@ -47,6 +51,8 @@ export default async function saveBattle({
       model: loser.model.apiName,
       code: loser.code,
       trimmedCode: loser.trimmedCode,
+      completionTokens: loser.completionTokens,
+      totalTime: loser.totalTime,
       didWin: false,
     });
   }

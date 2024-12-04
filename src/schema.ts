@@ -48,6 +48,8 @@ export const apps = pgTable(
     didWin: boolean("did_win").notNull(),
     code: text("code").notNull(),
     trimmedCode: text("trimmed_code").notNull(),
+    totalTime: integer("total_time"),
+    completionTokens: integer("completion_tokens"),
     ...timestamps,
   },
   (table) => {
