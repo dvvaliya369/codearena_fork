@@ -47,7 +47,7 @@ export default async function Page() {
         Top models <span className="text-blue-500">[all time]</span>
       </h1>
 
-      <div className="border-gray-400 mt-8 grid grid-cols-2 items-center justify-between gap-5 border p-5 tracking-[-0.02em] text-gray-900 md:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 items-center justify-between gap-5 border border-gray-400 p-5 tracking-[-0.02em] text-gray-900 md:grid-cols-4">
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.length}
@@ -78,7 +78,7 @@ export default async function Page() {
 
       <div className="mt-4 hidden md:flex">
         <div className="w-full shadow-lg shadow-gray-500/20">
-          <Table className="border-gray-400 border shadow-lg">
+          <Table className="border border-gray-400 shadow-lg">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[10%]"></TableHead>
@@ -178,7 +178,7 @@ function ResultCard({
   if (!model) return;
 
   return (
-    <div className="border-gray-400 flex border py-6">
+    <div className="flex border border-gray-400 py-6">
       <div className="w-1/5 text-center font-title text-xl font-medium tabular-nums tracking-[-.02em]">
         {index + 1}.
       </div>

@@ -53,7 +53,7 @@ export default function RootLayout({
           </div>
         </header>
 
-        <main className="grow px-4 py-8">{children}</main>
+        <main className="flex grow flex-col px-4 py-8">{children}</main>
 
         <footer className="mt-16 px-2 py-2 md:px-4 md:py-8">
           <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between">

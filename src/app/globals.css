@@ -38,3 +38,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes spinner {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
