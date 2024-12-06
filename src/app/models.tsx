@@ -8,6 +8,20 @@ import NousHermesLogo from "@/public/models/noushermes.webp";
 
 export const models = [
   {
+    label: "Llama 3.3 70B Instruct Turbo",
+    shortLabel: "Llama 3.3 70B",
+    organization: "Meta",
+    logo: LlamaLogo,
+    apiName: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+  },
+  {
+    label: "Llama 3.1 405B Instruct Turbo",
+    shortLabel: "Llama 3.1 405B",
+    organization: "Meta",
+    logo: LlamaLogo,
+    apiName: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+  },
+  {
     label: "Llama 3.1 8B Instruct Turbo",
     shortLabel: "Llama 3.1 8B",
     organization: "Meta",
@@ -21,28 +35,7 @@ export const models = [
     logo: LlamaLogo,
     apiName: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
   },
-  {
-    label: "Llama 3.1 405B Instruct Turbo",
-    shortLabel: "Llama 3.1 405B",
-    organization: "Meta",
-    logo: LlamaLogo,
-    apiName: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-  },
-  // {
-  //   label: "Llama 3.2 11B Vision Instruct Turbo",
-  //   apiName: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
-  // },
-  // {
-  //   label: "Llama 3.2 90B Vision Instruct Turbo",
-  //   apiName: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
-  // },
-  // {
-  //   label: "WizardLM-2 8x22B",
-  //   shortLabel: "WizardLM-2 8x22B",
-  //   organization: "Microsoft",
-  //   logo: WizardLmLogo,
-  //   apiName: "microsoft/WizardLM-2-8x22B",
-  // },
+
   {
     label: "Gemma 2 9B",
     shortLabel: "Gemma 2 9B",
@@ -92,4 +85,19 @@ export const models = [
     logo: NousHermesLogo,
     apiName: "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO",
   },
+  // {
+  //   label: "Llama 3.2 11B Vision Instruct Turbo",
+  //   apiName: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
+  // },
+  // {
+  //   label: "Llama 3.2 90B Vision Instruct Turbo",
+  //   apiName: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
+  // },
+  // {
+  //   label: "WizardLM-2 8x22B",
+  //   shortLabel: "WizardLM-2 8x22B",
+  //   organization: "Microsoft",
+  //   logo: WizardLmLogo,
+  //   apiName: "microsoft/WizardLM-2-8x22B",
+  // },
 ];
