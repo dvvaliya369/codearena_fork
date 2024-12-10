@@ -47,7 +47,7 @@ export default async function Page() {
         Top models <span className="text-blue-500">[all time]</span>
       </h1>
 
-      <div className="mt-8 grid grid-cols-2 items-center justify-between gap-5 border border-gray-400 p-5 tracking-[-0.02em] text-gray-900 md:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 items-center justify-between gap-5 border border-gray-400 bg-gray-300 p-5 tracking-[-0.02em] text-gray-900 md:grid-cols-4">
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.length}
@@ -70,13 +70,13 @@ export default async function Page() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-4 md:hidden">
+      <div className="mt-4 flex flex-col gap-4 bg-gray-300 md:hidden">
         {results.map((result, index) => (
           <ResultCard result={result} index={index} key={result.model} />
         ))}
       </div>
 
-      <div className="mt-4 hidden md:flex">
+      <div className="mt-4 hidden bg-gray-300 md:flex">
         <div className="w-full shadow-lg shadow-gray-500/20">
           <Table className="border border-gray-400 shadow-lg">
             <TableHeader>
