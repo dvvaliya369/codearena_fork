@@ -1,17 +1,21 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import party from "party-js";
+import RibbonIcon from "@/components/icons/ribbon";
 import SwordsIcon from "@/components/icons/swords";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import modelBackgroundImage from "@/public/model-background.png";
 import { Battle } from "@/schema";
 import {
   SandpackCodeEditor,
-  SandpackLayout,
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
 import { dracula } from "@codesandbox/sandpack-themes";
+import assert from "assert";
+import Image from "next/image";
+import Link from "next/link";
+import party from "party-js";
 import {
   FormEvent,
   ReactNode,
@@ -24,12 +28,7 @@ import {
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream.mjs";
 import { z } from "zod";
 import saveBattle from "./actions";
-import RibbonIcon from "@/components/icons/ribbon";
-import modelBackgroundImage from "@/public/model-background.png";
-import Image from "next/image";
-import Link from "next/link";
 import { models } from "./models";
-import assert from "assert";
 
 type App = {
   clientId: string;
@@ -146,20 +145,22 @@ export default function Home() {
         );
       })
       .on("end", () => {
-        setAppA((app) =>
-          app
-            ? {
-                ...app,
-                status: "complete",
-                totalTime: new Date().getTime() - startTime.getTime(),
-              }
-            : undefined,
-        );
-        setSelectedTabA("preview");
-        generatingCount--;
-        if (generatingCount === 0) {
-          setStatus("complete");
-        }
+        setTimeout(() => {
+          setAppA((app) =>
+            app
+              ? {
+                  ...app,
+                  status: "complete",
+                  totalTime: new Date().getTime() - startTime.getTime(),
+                }
+              : undefined,
+          );
+          setSelectedTabA("preview");
+          generatingCount--;
+          if (generatingCount === 0) {
+            setStatus("complete");
+          }
+        }, 500);
       });
     ChatCompletionStream.fromReadableStream(resB.body)
       .on("content", (delta) =>
@@ -186,20 +187,22 @@ export default function Home() {
         );
       })
       .on("end", () => {
-        setAppB((app) =>
-          app
-            ? {
-                ...app,
-                status: "complete",
-                totalTime: new Date().getTime() - startTime.getTime(),
-              }
-            : undefined,
-        );
-        setSelectedTabB("preview");
-        generatingCount--;
-        if (generatingCount === 0) {
-          setStatus("complete");
-        }
+        setTimeout(() => {
+          setAppB((app) =>
+            app
+              ? {
+                  ...app,
+                  status: "complete",
+                  totalTime: new Date().getTime() - startTime.getTime(),
+                }
+              : undefined,
+          );
+          setSelectedTabB("preview");
+          generatingCount--;
+          if (generatingCount === 0) {
+            setStatus("complete");
+          }
+        }, 500);
       });
   }
 
@@ -354,6 +357,7 @@ function Result({
             <TabsTrigger
               className="border border-r-0 border-gray-500 data-[state=active]:border-black data-[state=active]:bg-black data-[state=active]:text-white"
               value="preview"
+              disabled={app.status !== "complete"}
             >
               Preview
             </TabsTrigger>
@@ -376,13 +380,14 @@ function Result({
               ],
             }}
           >
-            <SandpackLayout className="!rounded-none !border-none">
+            {app.status === "complete" && (
               <TabsContent
                 value="preview"
                 forceMount
                 className="data-[state=inactive]:hidden"
               >
                 <SandpackPreview
+                  key={app.trimmedCode}
                   showNavigator={false}
                   showOpenInCodeSandbox={false}
                   showRefreshButton={false}
@@ -391,16 +396,17 @@ function Result({
                   className="aspect-square w-full"
                 />
               </TabsContent>
-              <TabsContent
-                value="code"
-                forceMount
-                className="data-[state=inactive]:hidden"
-              >
-                <SandpackCodeEditor
-                  className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} overflow-hidden [&_.cm-line]:text-[13px]`}
-                />
-              </TabsContent>
-            </SandpackLayout>
+            )}
+            <TabsContent
+              value="code"
+              forceMount
+              className="data-[state=inactive]:hidden"
+            >
+              <SandpackCodeEditor
+                readOnly
+                className={`aspect-square ${app.status === "generating" ? "[&_.cm-scroller]:flex-col-reverse" : ""} overflow-hidden [&_.cm-line]:text-[13px]`}
+              />
+            </TabsContent>
           </SandpackProvider>
         </div>
       </Tabs>
