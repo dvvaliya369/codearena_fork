@@ -1,17 +1,22 @@
-// app/api/answer/route.ts
 import dedent from "dedent";
 import Together from "together-ai";
 
-const together = new Together();
+const options: ConstructorParameters<typeof Together>[0] = {};
+if (process.env.HELICONE_API_KEY) {
+  options.baseURL = "https://together.helicone.ai/v1";
+  options.defaultHeaders = {
+    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+    "Helicone-Property-appname": "codearena",
+  };
+}
+
+const together = new Together(options);
 
 export async function POST(request: Request) {
   const { prompt, model } = await request.json();
 
-  console.log(`Creating "${prompt}" with ${model}`);
-
   try {
     const res = await together.chat.completions.create({
-      // model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
       model,
       messages: [
         {
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
           role: "user",
           content: dedent`
           ${prompt}
-          
+
           Please ONLY return code, NO backticks or language names.`,
         },
       ],
