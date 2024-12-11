@@ -45,7 +45,7 @@ export default function Home() {
   const [status, setStatus] = useState<"idle" | "generating" | "complete">(
     "idle",
   );
-  const [prompt, setPrompt] = useState("A todo app");
+  const [prompt, setPrompt] = useState("");
   const [submittedPrompt, setSubmittedPrompt] = useState("");
   const [appA, setAppA] = useState<App>();
   const [appB, setAppB] = useState<App>();
@@ -255,11 +255,10 @@ export default function Home() {
 
           <div className="mt-3 flex flex-wrap justify-center gap-2">
             {[
-              "Product page",
-              "To-do list app",
-              "Blog homepage",
-              "Chat interface",
-              "Weather dashboard",
+              "Quiz app about llamas",
+              "Hacker news clone",
+              "Personal finance dashboard",
+              "Budgeting app tracker",
             ].map((example) => (
               <Button
                 onClick={() => setPrompt(example)}
