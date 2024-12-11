@@ -44,29 +44,30 @@ export default async function Page() {
   return (
     <div className="mx-auto max-w-2xl px-4">
       <h1 className="text-center font-title text-2xl font-bold uppercase text-gray-900">
-        Top models <span className="text-blue-500">[all time]</span>
+        Leaderboard: Top <span className="text-blue-500">OSS Coding</span>{" "}
+        models
       </h1>
 
-      <div className="mt-8 grid grid-cols-2 items-center justify-between gap-5 border border-gray-400 bg-gray-300 p-5 tracking-[-0.02em] text-gray-900 md:grid-cols-4">
+      <div className="mt-8 grid grid-cols-3 items-center justify-between gap-5 border border-gray-400 bg-gray-300 p-5 tracking-[-0.02em] text-gray-900">
         <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.length}
           </div>
-          <div className="text-sm text-gray-500"># of models</div>
+          <div className="text-sm text-gray-500">models</div>
         </div>
-        <div className="text-center">
+        {/* <div className="text-center">
           <div className="font-title text-xl font-semibold">
             {results.reduce((total, row) => total + row.wins, 0)}
           </div>
           <div className="text-sm text-gray-500"># of votes</div>
-        </div>
+        </div> */}
         <div className="text-center">
           <div className="font-title text-xl font-semibold">{battlesCount}</div>
-          <div className="text-sm text-gray-500"># games played</div>
+          <div className="text-sm text-gray-500">games/votes</div>
         </div>
         <div className="text-center">
           <div className="font-title text-xl font-semibold">{totalUsers}</div>
-          <div className="text-sm text-gray-500"># of users</div>
+          <div className="text-sm text-gray-500">unique users</div>
         </div>
       </div>
 

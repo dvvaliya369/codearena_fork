@@ -95,27 +95,44 @@ export default function RootLayout({
 
         <footer className="mt-16 px-2 py-2 md:px-4 md:py-8">
           <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between">
-            <p className="text-xs md:text-sm">Powered by Together.ai</p>
+            <p className="text-xs md:text-sm">
+              Powered by{" "}
+              <a
+                href="https://dub.sh/together-ai"
+                target="_blank"
+                className="font-medium underline underline-offset-4"
+              >
+                Together.ai
+              </a>
+            </p>
             <div className="inline-flex items-center gap-2">
               <Button
                 variant="ghost"
                 className="rounded-md border border-gray-500 px-3 text-xs"
                 asChild
               >
-                <Link href="#">
+                <a
+                  href="https://github.com/Nutlope/codearena"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <GithubIcon />
                   GitHub
-                </Link>
+                </a>
               </Button>
               <Button
                 variant="ghost"
                 className="rounded-md border border-gray-500 px-3 text-xs"
                 asChild
               >
-                <Link href="#">
+                <a
+                  href="https://x.com/nutlope"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <XIcon />
                   Twitter
-                </Link>
+                </a>
               </Button>
             </div>
           </div>
