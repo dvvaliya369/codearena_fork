@@ -4,7 +4,7 @@
 </a>
 
 <p align="center">
-  Two LLMs build the same app, you vote on which one did best, and see a live leaderboard of the best OSS coding LLMs.
+  Watch LLMs battle to build the same app and see a live leaderboard of the best OSS coding LLMs.
 </p>
 
 ## Tech stack
