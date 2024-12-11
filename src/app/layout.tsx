@@ -24,9 +24,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 const title = "CodeArena – Which LLM codes best?";
 const description =
   "Watch AI models compete in real-time & vote on the best one";
-const url = "https://codearena.dev/";
-const ogimage = "https://codearena.dev/og-image.png";
-const sitename = "codearena.dev";
+const url = "https://llmcodearena.com/";
+const ogimage = "https://llmcodearena.com/og-image.png";
+const sitename = "llmcodearena.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
@@ -63,7 +63,7 @@ export default function RootLayout({
       className={`${tektur.variable} ${plusJakartaSans.variable} h-full`}
     >
       <head>
-        <PlausibleProvider domain="codearena.dev" />
+        <PlausibleProvider domain="llmcodearena.com" />
       </head>
       <body className="relative flex min-h-full flex-col bg-gray-300 text-gray-500 antialiased">
         <div
