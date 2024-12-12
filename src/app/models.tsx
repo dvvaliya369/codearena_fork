@@ -58,7 +58,7 @@ export const models = [
   },
   {
     label: "Qwen 2.5 Coder 32B Instruct",
-    shortLabel: "Qwen 2.5 32B",
+    shortLabel: "Qwen 2.5 Coder 32B",
     organization: "Qwen",
     logo: QwenLogo,
     apiName: "Qwen/Qwen2.5-Coder-32B-Instruct",
