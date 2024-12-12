@@ -25,3 +25,5 @@
 ## Future tasks
 
 - [ ] Add two chained LLM calls generations for better results (also do a DB migration to tag each app/battle with single/multi calls)
+- [ ] Add Elo scores
+- [ ] Add the abilty to generate + run scripts
