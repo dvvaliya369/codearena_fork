@@ -581,7 +581,7 @@ function Vote({
             <p className="text-gray-900 md:hidden">
               Check out the{" "}
               <Link
-                href="#"
+                href="/top-models"
                 className="text-blue-500 underline underline-offset-[3px]"
               >
                 leaderboard
