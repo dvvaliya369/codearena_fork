@@ -18,7 +18,7 @@ export const models = [
     shortLabel: "Mistral Small 3",
     organization: "Mistral AI",
     logo: MixtralLogo,
-    apiName: "mistralai/Mistral-Small-24B-Instruct-2501	",
+    apiName: "mistralai/Mistral-Small-24B-Instruct-2501",
   },
   {
     label: "DeepSeek V3",

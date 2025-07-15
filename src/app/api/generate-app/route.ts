@@ -47,6 +47,7 @@ export async function POST(request: Request) {
       ],
       temperature: 0.2,
       stream: true,
+      max_tokens: 6000,
     });
 
     return new Response(res.toReadableStream());
