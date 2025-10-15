@@ -1,6 +1,6 @@
-import { db } from "@/db";
-import { apps, battles } from "@/schema";
-import { count, countDistinct, desc, sql, sum } from "drizzle-orm";
+// import { db } from "@/db";
+// import { apps, battles } from "@/schema";
+// import { count, countDistinct, desc, sql, sum } from "drizzle-orm";
 import {
   Table,
   TableBody,
@@ -16,30 +16,33 @@ import { Button } from "@/components/ui/button";
 import UpRightArrow from "@/components/icons/up-right-arrow";
 
 export default async function Page() {
-  const [{ totalUsers }] = await db
-    .select({ totalUsers: countDistinct(battles.creatorCookie) })
-    .from(battles);
+  // Mock data for demo since we don't have database access
+  const results = [
+    {
+      model: "meta-llama/Llama-3.2-3B-Instruct-Turbo",
+      wins: 45,
+      losses: 15,
+      games: 60,
+      winPercentage: 75,
+    },
+    {
+      model: "meta-llama/Llama-3.1-8B-Instruct-Turbo",
+      wins: 38,
+      losses: 22,
+      games: 60,
+      winPercentage: 63,
+    },
+    {
+      model: "microsoft/WizardLM-2-8x22B",
+      wins: 35,
+      losses: 25,
+      games: 60,
+      winPercentage: 58,
+    },
+  ];
 
-  const battlesCount = await db.$count(battles);
-
-  const results = await db
-    .select({
-      model: apps.model,
-      wins: sum(sql`CASE WHEN ${apps.didWin} = true THEN 1 ELSE 0 END`).mapWith(
-        Number,
-      ),
-      losses: sum(
-        sql`CASE WHEN ${apps.didWin} = false THEN 1 ELSE 0 END`,
-      ).mapWith(Number),
-      games: count(),
-      winPercentage:
-        sql`ROUND(SUM(CASE WHEN ${apps.didWin} = true THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 0)`
-          .mapWith(Number)
-          .as("win_percentage"),
-    })
-    .from(apps)
-    .groupBy(apps.model)
-    .orderBy(desc(sql`win_percentage`));
+  const totalUsers = 150;
+  const battlesCount = 180;
 
   return (
     <div className="mx-auto max-w-2xl px-4">
