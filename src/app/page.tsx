@@ -4,6 +4,9 @@ import RibbonIcon from "@/components/icons/ribbon";
 import SwordsIcon from "@/components/icons/swords";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TrashTalkProvider from "@/components/trash-talk-provider";
+import TrashTalkControls from "@/components/trash-talk-controls";
+import { useTrashTalk } from "@/components/trash-talk-provider";
 import modelBackgroundImage from "@/public/model-background.png";
 import { Battle } from "@/schema";
 import {
@@ -207,6 +210,184 @@ export default function Home() {
   }
 
   return (
+    <TrashTalkProvider>
+      <HomeWithTrashTalk />
+    </TrashTalkProvider>
+  );
+}
+
+function HomeWithTrashTalk() {
+  const { processPrompt } = useTrashTalk();
+  const [status, setStatus] = useState<"idle" | "generating" | "complete">(
+    "idle",
+  );
+  const [prompt, setPrompt] = useState("");
+  const [submittedPrompt, setSubmittedPrompt] = useState("");
+  const [appA, setAppA] = useState<App>();
+  const [appB, setAppB] = useState<App>();
+  const [selectedTabA, setSelectedTabA] = useState("code");
+  const [selectedTabB, setSelectedTabB] = useState("code");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setSelectedTabA("code");
+    setSelectedTabB("code");
+
+    const formData = new FormData(event.currentTarget);
+    const prompt = formData.get("prompt");
+    const testModel = formData.get("testModel");
+
+    assert.ok(typeof prompt === "string");
+
+    // Process prompt with trash talk
+    const trashTalkResult = processPrompt(prompt);
+
+    setStatus("generating");
+    setSubmittedPrompt(prompt);
+
+    let modelA, modelB;
+
+    if (testModel) {
+      const model = models.find((m) => m.apiName === testModel);
+      if (!model) {
+        throw new Error("Test model not found");
+      }
+      modelA = model;
+      modelB = model;
+    } else {
+      [modelA, modelB] = getRandomModels();
+    }
+
+    setAppA({
+      clientId: crypto.randomUUID(),
+      code: "",
+      trimmedCode: "",
+      model: modelA,
+      isLoading: true,
+      status: "generating",
+    });
+    setAppB({
+      clientId: crypto.randomUUID(),
+      code: "",
+      trimmedCode: "",
+      model: modelB,
+      isLoading: true,
+      status: "generating",
+    });
+
+    // create a stream for each model
+    const startTime = new Date();
+
+    const [resA, resB] = await Promise.all([
+      fetch("/api/generate-app", {
+        method: "POST",
+        body: JSON.stringify({
+          prompt,
+          model: modelA.apiName,
+          trashTalk: trashTalkResult,
+        }),
+      }),
+      fetch("/api/generate-app", {
+        method: "POST",
+        body: JSON.stringify({
+          prompt,
+          model: modelB.apiName,
+          trashTalk: trashTalkResult,
+        }),
+      }),
+    ]);
+
+    if (!resA.body || !resB.body) return;
+
+    let generatingCount = 2;
+    ChatCompletionStream.fromReadableStream(resA.body)
+      .on("content", (delta) =>
+        setAppA((app) => {
+          if (!app) {
+            console.log("?");
+            return undefined;
+          }
+
+          const code = app.code + delta;
+          const trimmedCode = trimCode(code);
+
+          return { ...app, code, trimmedCode };
+        }),
+      )
+      .on("totalUsage", (usage) => {
+        setAppA((app) =>
+          app
+            ? {
+                ...app,
+                completionTokens: usage.completion_tokens,
+              }
+            : undefined,
+        );
+      })
+      .on("end", () => {
+        setTimeout(() => {
+          setAppA((app) =>
+            app
+              ? {
+                  ...app,
+                  status: "complete",
+                  totalTime: new Date().getTime() - startTime.getTime(),
+                }
+              : undefined,
+          );
+          setSelectedTabA("preview");
+          generatingCount--;
+          if (generatingCount === 0) {
+            setStatus("complete");
+          }
+        }, 500);
+      });
+    ChatCompletionStream.fromReadableStream(resB.body)
+      .on("content", (delta) =>
+        setAppB((app) => {
+          if (!app) {
+            console.log("?");
+            return undefined;
+          }
+
+          const code = app.code + delta;
+          const trimmedCode = trimCode(code);
+
+          return { ...app, code, trimmedCode };
+        }),
+      )
+      .on("totalUsage", (usage) => {
+        setAppB((app) =>
+          app
+            ? {
+                ...app,
+                completionTokens: usage.completion_tokens,
+              }
+            : undefined,
+        );
+      })
+      .on("end", () => {
+        setTimeout(() => {
+          setAppB((app) =>
+            app
+              ? {
+                  ...app,
+                  status: "complete",
+                  totalTime: new Date().getTime() - startTime.getTime(),
+                }
+              : undefined,
+          );
+          setSelectedTabB("preview");
+          generatingCount--;
+          if (generatingCount === 0) {
+            setStatus("complete");
+          }
+        }, 500);
+      });
+  }
+
+  return (
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="text-center">
         <h1 className="mt-8 font-title text-2xl font-bold tracking-[-.01em] text-gray-900 md:text-4xl">
@@ -215,6 +396,11 @@ export default function Home() {
         <p className="mx-auto mt-2 max-w-md text-balance text-sm tracking-[-.01em] text-gray-500 md:text-base">
           Watch AI models compete in real-time, and see who emerges victorious.
         </p>
+      </div>
+
+      {/* Trash Talk Controls */}
+      <div className="mx-auto mt-6 max-w-2xl">
+        <TrashTalkControls compact={true} className="justify-center" />
       </div>
 
       <form onSubmit={handleSubmit} className="mx-auto mt-4 max-w-2xl md:mt-8">

@@ -13,7 +13,10 @@ if (process.env.HELICONE_API_KEY) {
 const together = new Together(options);
 
 export async function POST(request: Request) {
-  const { prompt, model } = await request.json();
+  const { prompt, model, trashTalk } = await request.json();
+
+  // Use the modified prompt if trash talk is provided
+  const finalPrompt = trashTalk && trashTalk.modifiedPrompt ? trashTalk.modifiedPrompt : prompt;
 
   try {
     const res = await together.chat.completions.create({
@@ -40,7 +43,7 @@ export async function POST(request: Request) {
         {
           role: "user",
           content: dedent`
-          ${prompt}
+          ${finalPrompt}
 
           Please ONLY return code, NO backticks or language names.`,
         },
