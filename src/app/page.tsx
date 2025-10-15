@@ -4,6 +4,9 @@ import RibbonIcon from "@/components/icons/ribbon";
 import SwordsIcon from "@/components/icons/swords";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrashTalkToggle } from "@/components/trash-talk/TrashTalkToggle";
+import { OpponentInput } from "@/components/trash-talk/OpponentInput";
+import { generateTrashTalkPrompt } from "@/lib/trash-talk-generator";
 import modelBackgroundImage from "@/public/model-background.png";
 import { Battle } from "@/schema";
 import {
@@ -51,6 +54,10 @@ export default function Home() {
   const [appB, setAppB] = useState<App>();
   const [selectedTabA, setSelectedTabA] = useState("code");
   const [selectedTabB, setSelectedTabB] = useState("code");
+  
+  // Trash talk state
+  const [isTrashTalkEnabled, setIsTrashTalkEnabled] = useState(false);
+  const [opponent, setOpponent] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -63,6 +70,11 @@ export default function Home() {
     const testModel = formData.get("testModel");
 
     assert.ok(typeof prompt === "string");
+
+    // Apply trash talk to prompt if enabled
+    const finalPrompt = isTrashTalkEnabled && opponent.trim() 
+      ? generateTrashTalkPrompt(prompt, opponent.trim())
+      : prompt;
 
     setStatus("generating");
     setSubmittedPrompt(prompt);
@@ -104,14 +116,14 @@ export default function Home() {
       fetch("/api/generate-app", {
         method: "POST",
         body: JSON.stringify({
-          prompt,
+          prompt: finalPrompt,
           model: modelA.apiName,
         }),
       }),
       fetch("/api/generate-app", {
         method: "POST",
         body: JSON.stringify({
-          prompt,
+          prompt: finalPrompt,
           model: modelB.apiName,
         }),
       }),
@@ -270,6 +282,22 @@ export default function Home() {
                 {example}
               </Button>
             ))}
+          </div>
+
+          <div className="mt-6 max-w-lg mx-auto">
+            <TrashTalkToggle 
+              isEnabled={isTrashTalkEnabled}
+              onToggle={setIsTrashTalkEnabled}
+            />
+            
+            {isTrashTalkEnabled && (
+              <div className="mt-4">
+                <OpponentInput
+                  opponent={opponent}
+                  onOpponentChange={setOpponent}
+                />
+              </div>
+            )}
           </div>
 
           <div className="mt-10 text-center">
