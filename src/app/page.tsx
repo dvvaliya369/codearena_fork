@@ -2,8 +2,11 @@
 
 import RibbonIcon from "@/components/icons/ribbon";
 import SwordsIcon from "@/components/icons/swords";
+import { TrashTalkToggle } from "@/components/trash-talk-toggle";
+import { TrashTalkDisplay } from "@/components/trash-talk-display";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrashTalkConfig, createTrashTalkPrompt } from "@/lib/trash-talk";
 import modelBackgroundImage from "@/public/model-background.png";
 import { Battle } from "@/schema";
 import {
@@ -51,6 +54,12 @@ export default function Home() {
   const [appB, setAppB] = useState<App>();
   const [selectedTabA, setSelectedTabA] = useState("code");
   const [selectedTabB, setSelectedTabB] = useState("code");
+  
+  // Trash Talk state management
+  const [trashTalkConfig, setTrashTalkConfig] = useState<TrashTalkConfig>({
+    enabled: false,
+    opponent: null,
+  });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -104,14 +113,14 @@ export default function Home() {
       fetch("/api/generate-app", {
         method: "POST",
         body: JSON.stringify({
-          prompt,
+          prompt: createTrashTalkPrompt(trashTalkConfig, prompt),
           model: modelA.apiName,
         }),
       }),
       fetch("/api/generate-app", {
         method: "POST",
         body: JSON.stringify({
-          prompt,
+          prompt: createTrashTalkPrompt(trashTalkConfig, prompt),
           model: modelB.apiName,
         }),
       }),
@@ -219,6 +228,13 @@ export default function Home() {
 
       <form onSubmit={handleSubmit} className="mx-auto mt-4 max-w-2xl md:mt-8">
         <fieldset disabled={status === "generating"}>
+          {/* Trash Talk Toggle Component */}
+          <div className="mb-6">
+            <TrashTalkToggle 
+              config={trashTalkConfig} 
+              onChange={setTrashTalkConfig} 
+            />
+          </div>
           {/* <div>
             <select
               name="testModel"
@@ -283,6 +299,14 @@ export default function Home() {
           </div>
         </fieldset>
       </form>
+      
+      {/* Trash Talk Display Component - shown when enabled and battle is idle */}
+      {trashTalkConfig.enabled && trashTalkConfig.opponent && status === "idle" && (
+        <div className="mx-auto mt-6 max-w-2xl">
+          <TrashTalkDisplay config={trashTalkConfig} />
+        </div>
+      )}
+      
       <div>
         <div
           key={submittedPrompt}
