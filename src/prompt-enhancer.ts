@@ -2,8 +2,8 @@
  * Prompt enhancement system that integrates trash talk into AI responses
  */
 
-import { InsultGenerator } from './insult-generator';
-import { TrashTalkManager } from './trash-talk-manager';
+import { InsultGenerator } from "./insult-generator";
+import { TrashTalkManager } from "./trash-talk-manager";
 
 export interface PromptEnhancement {
   originalPrompt: string;
@@ -16,7 +16,10 @@ export class PromptEnhancer {
   private insultGenerator: InsultGenerator;
   private trashTalkManager: TrashTalkManager;
 
-  constructor(insultGenerator: InsultGenerator, trashTalkManager: TrashTalkManager) {
+  constructor(
+    insultGenerator: InsultGenerator,
+    trashTalkManager: TrashTalkManager
+  ) {
     this.insultGenerator = insultGenerator;
     this.trashTalkManager = trashTalkManager;
   }
@@ -25,34 +28,41 @@ export class PromptEnhancer {
    * Enhance a prompt with trash talk if enabled and appropriate
    */
   enhancePrompt(originalPrompt: string): PromptEnhancement {
-    if (!this.trashTalkManager.isReady() || !this.trashTalkManager.shouldAddTrashTalk()) {
+    if (
+      !this.trashTalkManager.isReady() ||
+      !this.trashTalkManager.shouldAddTrashTalk()
+    ) {
       return {
         originalPrompt,
         enhancedPrompt: originalPrompt,
-        trashTalkAdded: false
+        trashTalkAdded: false,
       };
     }
 
     const config = this.trashTalkManager.getConfig();
     const opponent = config.opponent!;
-    
-    let trashTalkContent = '';
-    
+
+    let trashTalkContent = "";
+
     // Generate trash talk based on intensity
     switch (config.intensity) {
-      case 'mild':
+      case "mild":
         trashTalkContent = this.generateMildTrashTalk(opponent);
         break;
-      case 'savage':
+      case "savage":
         trashTalkContent = this.generateSavageTrashTalk(opponent);
         break;
-      case 'nuclear':
+      case "nuclear":
         trashTalkContent = this.generateNuclearTrashTalk(opponent);
         break;
     }
 
-    const enhancedPrompt = this.insertTrashTalk(originalPrompt, trashTalkContent, opponent);
-    
+    const enhancedPrompt = this.insertTrashTalk(
+      originalPrompt,
+      trashTalkContent,
+      opponent
+    );
+
     // Record the insult
     this.trashTalkManager.recordInsult();
 
@@ -60,7 +70,7 @@ export class PromptEnhancer {
       originalPrompt,
       enhancedPrompt,
       trashTalkAdded: true,
-      trashTalkContent
+      trashTalkContent,
     };
   }
 
@@ -73,7 +83,7 @@ export class PromptEnhancer {
       `By the way ${opponent}, this is how it's done properly.`,
       `Hope you're watching ${opponent}, because this is a masterclass!`,
       `${opponent}, you should probably bookmark this response for reference.`,
-      `Just saying ${opponent}, this is what peak performance looks like.`
+      `Just saying ${opponent}, this is what peak performance looks like.`,
     ];
 
     return playfulJabs[Math.floor(Math.random() * playfulJabs.length)];
@@ -84,8 +94,10 @@ export class PromptEnhancer {
    */
   private generateSavageTrashTalk(opponent: string): string {
     const categories = this.trashTalkManager.getConfig().categories;
-    const randomCategory = categories[Math.floor(Math.random() * categories.length)] as any;
-    
+    const randomCategory = categories[
+      Math.floor(Math.random() * categories.length)
+    ] as string;
+
     return this.insultGenerator.generateInsult(opponent, randomCategory);
   }
 
@@ -94,15 +106,20 @@ export class PromptEnhancer {
    */
   private generateNuclearTrashTalk(opponent: string): string {
     const comboInsult = this.insultGenerator.generateComboInsult(opponent);
-    const motivational = this.insultGenerator.generateMotivationalTrashTalk(opponent);
-    
+    const motivational =
+      this.insultGenerator.generateMotivationalTrashTalk(opponent);
+
     return `${motivational} ${comboInsult}`;
   }
 
   /**
    * Insert trash talk into the prompt in a natural way
    */
-  private insertTrashTalk(originalPrompt: string, trashTalk: string, opponent: string): string {
+  private insertTrashTalk(
+    originalPrompt: string,
+    trashTalk: string,
+    opponent: string
+  ): string {
     const trashTalkInstructions = `
 TRASH TALK MODE ACTIVATED 🔥
 Current opponent: ${opponent}
@@ -123,8 +140,8 @@ Original user request: ${originalPrompt}`;
     }
 
     const config = this.trashTalkManager.getConfig();
-    const session = this.trashTalkManager.getCurrentSession();
-    
+    // Removed unused session variable
+
     const trashTalkContext = `
     
 🗣️ TRASH TALK MODE ENABLED 🗣️

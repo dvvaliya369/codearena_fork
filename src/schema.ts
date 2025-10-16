@@ -28,7 +28,7 @@ export const battles = pgTable(
     return {
       creatorCookieIdx: index("creator_cookie_idx").on(table.creatorCookie),
     };
-  },
+  }
 );
 
 export type Battle = typeof battles.$inferSelect;
@@ -57,7 +57,7 @@ export const apps = pgTable(
       modelIdx: index("model_idx").on(table.model),
       didWinIdx: index("did_win_idx").on(table.didWin),
     };
-  },
+  }
 );
 
 export type App = typeof apps.$inferSelect;

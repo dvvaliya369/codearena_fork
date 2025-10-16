@@ -5,9 +5,9 @@
 export interface TrashTalkConfig {
   enabled: boolean;
   opponent: string | null;
-  intensity: 'mild' | 'savage' | 'nuclear';
+  intensity: "mild" | "savage" | "nuclear";
   categories: string[];
-  frequency: 'rare' | 'occasional' | 'frequent';
+  frequency: "rare" | "occasional" | "frequent";
 }
 
 export interface TrashTalkSession {
@@ -21,9 +21,9 @@ export class TrashTalkManager {
   private config: TrashTalkConfig = {
     enabled: false,
     opponent: null,
-    intensity: 'mild',
-    categories: ['general'],
-    frequency: 'occasional'
+    intensity: "mild",
+    categories: ["general"],
+    frequency: "occasional",
   };
 
   private currentSession: TrashTalkSession | null = null;
@@ -33,11 +33,11 @@ export class TrashTalkManager {
    */
   toggle(): boolean {
     this.config.enabled = !this.config.enabled;
-    
+
     if (!this.config.enabled) {
       this.endSession();
     }
-    
+
     return this.config.enabled;
   }
 
@@ -46,7 +46,7 @@ export class TrashTalkManager {
    */
   setOpponent(opponent: string): void {
     this.config.opponent = opponent;
-    
+
     if (this.config.enabled && opponent) {
       this.startSession(opponent);
     }
@@ -60,7 +60,7 @@ export class TrashTalkManager {
       opponent,
       startTime: new Date(),
       insultCount: 0,
-      lastInsultTime: new Date()
+      lastInsultTime: new Date(),
     };
   }
 
@@ -120,11 +120,11 @@ export class TrashTalkManager {
     const timeSinceLastInsult = now - lastInsult;
 
     switch (this.config.frequency) {
-      case 'rare':
+      case "rare":
         return Math.random() < 0.1 && timeSinceLastInsult > 30000; // 10% chance, 30s cooldown
-      case 'occasional':
+      case "occasional":
         return Math.random() < 0.3 && timeSinceLastInsult > 15000; // 30% chance, 15s cooldown
-      case 'frequent':
+      case "frequent":
         return Math.random() < 0.6 && timeSinceLastInsult > 5000; // 60% chance, 5s cooldown
       default:
         return false;

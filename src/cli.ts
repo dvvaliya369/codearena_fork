@@ -2,7 +2,7 @@
  * Command Line Interface for the Trash Talk feature
  */
 
-import { TrashTalk } from './trash-talk';
+import { TrashTalk } from "./trash-talk";
 
 export class TrashTalkCLI {
   private trashTalk: TrashTalk;
@@ -16,40 +16,40 @@ export class TrashTalkCLI {
    */
   processCommand(command: string, args: string[] = []): string {
     switch (command.toLowerCase()) {
-      case 'help':
-      case '?':
+      case "help":
+      case "?":
         return this.trashTalk.getHelp();
 
-      case 'toggle':
-        const status = this.trashTalk.toggle();
-        return this.formatStatus(status);
+      case "toggle":
+        this.trashTalk.toggle();
+        return this.formatStatus(this.trashTalk.getStatus());
 
-      case 'opponent':
-      case 'target':
+      case "opponent":
+      case "target":
         if (args.length === 0) {
           return "❌ Please provide an opponent name: opponent <name>";
         }
-        const opponent = args.join(' ');
+        const opponent = args.join(" ");
         const newStatus = this.trashTalk.setOpponent(opponent);
         return this.formatStatus(newStatus);
 
-      case 'status':
+      case "status":
         return this.formatStatus(this.trashTalk.getStatus());
 
-      case 'insult':
-      case 'roast':
+      case "insult":
+      case "roast":
         const category = args[0];
         return `🔥 ${this.trashTalk.generateInsult(category)}`;
 
-      case 'config':
-      case 'configure':
+      case "config":
+      case "configure":
         return this.handleConfigCommand(args);
 
-      case 'categories':
-        return `Available categories: ${this.trashTalk.getCategories().join(', ')}`;
+      case "categories":
+        return `Available categories: ${this.trashTalk.getCategories().join(", ")}`;
 
-      case 'end':
-      case 'stop':
+      case "end":
+      case "stop":
         this.trashTalk.endSession();
         return "📊 Session ended!";
 
@@ -63,31 +63,31 @@ export class TrashTalkCLI {
    */
   private handleConfigCommand(args: string[]): string {
     if (args.length === 0) {
-      const status = this.trashTalk.getStatus();
+      // Remove unused status variable
       return `Current config: intensity=savage, frequency=occasional`;
     }
 
     try {
-      const options: any = {};
-      
+      const options: Record<string, string> = {};
+
       for (let i = 0; i < args.length; i += 2) {
         const key = args[i];
         const value = args[i + 1];
-        
+
         if (!value) {
           return `❌ Missing value for ${key}`;
         }
 
         switch (key) {
-          case 'intensity':
-            if (['mild', 'savage', 'nuclear'].includes(value)) {
+          case "intensity":
+            if (["mild", "savage", "nuclear"].includes(value)) {
               options.intensity = value;
             } else {
               return `❌ Invalid intensity. Use: mild, savage, nuclear`;
             }
             break;
-          case 'frequency':
-            if (['rare', 'occasional', 'frequent'].includes(value)) {
+          case "frequency":
+            if (["rare", "occasional", "frequent"].includes(value)) {
               options.frequency = value;
             } else {
               return `❌ Invalid frequency. Use: rare, occasional, frequent`;
@@ -108,12 +108,17 @@ export class TrashTalkCLI {
   /**
    * Format status for display
    */
-  private formatStatus(status: any): string {
+  private formatStatus(status: {
+    enabled: boolean;
+    opponent?: string;
+    sessionActive: boolean;
+    stats: string;
+  }): string {
     return `
 📊 Trash Talk Status:
-  Enabled: ${status.enabled ? '🔥 YES' : '❌ NO'}
-  Opponent: ${status.opponent || '❌ None'}
-  Session: ${status.sessionActive ? '✅ Active' : '❌ Inactive'}
+  Enabled: ${status.enabled ? "🔥 YES" : "❌ NO"}
+  Opponent: ${status.opponent || "❌ None"}
+  Session: ${status.sessionActive ? "✅ Active" : "❌ Inactive"}
   ${status.stats}
 `;
   }

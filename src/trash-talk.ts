@@ -2,9 +2,9 @@
  * Main TrashTalk class that brings everything together
  */
 
-import { InsultGenerator } from './insult-generator';
-import { TrashTalkManager } from './trash-talk-manager';
-import { PromptEnhancer } from './prompt-enhancer';
+import { InsultGenerator } from "./insult-generator";
+import { TrashTalkManager } from "./trash-talk-manager";
+import { PromptEnhancer } from "./prompt-enhancer";
 
 export interface TrashTalkStatus {
   enabled: boolean;
@@ -21,7 +21,10 @@ export class TrashTalk {
   constructor() {
     this.insultGenerator = new InsultGenerator();
     this.manager = new TrashTalkManager();
-    this.promptEnhancer = new PromptEnhancer(this.insultGenerator, this.manager);
+    this.promptEnhancer = new PromptEnhancer(
+      this.insultGenerator,
+      this.manager
+    );
   }
 
   /**
@@ -29,10 +32,11 @@ export class TrashTalk {
    */
   toggle(): TrashTalkStatus {
     const enabled = this.manager.toggle();
-    
-    console.log(enabled 
-      ? "🔥 TRASH TALK MODE ACTIVATED! Time to roast some opponents! 🔥"
-      : "😇 Trash talk disabled. Back to being nice and helpful!"
+
+    console.log(
+      enabled
+        ? "🔥 TRASH TALK MODE ACTIVATED! Time to roast some opponents! 🔥"
+        : "😇 Trash talk disabled. Back to being nice and helpful!"
     );
 
     return this.getStatus();
@@ -48,7 +52,7 @@ export class TrashTalk {
 
     this.manager.setOpponent(opponent.trim());
     console.log(`🎯 Target acquired: ${opponent}! Let the roasting begin! 🎯`);
-    
+
     return this.getStatus();
   }
 
@@ -56,13 +60,13 @@ export class TrashTalk {
    * Configure trash talk settings
    */
   configure(options: {
-    intensity?: 'mild' | 'savage' | 'nuclear';
-    frequency?: 'rare' | 'occasional' | 'frequent';
+    intensity?: "mild" | "savage" | "nuclear";
+    frequency?: "rare" | "occasional" | "frequent";
     categories?: string[];
   }): TrashTalkStatus {
     this.manager.updateConfig(options);
     console.log("⚙️ Trash talk configuration updated!");
-    
+
     return this.getStatus();
   }
 
@@ -72,12 +76,12 @@ export class TrashTalk {
   getStatus(): TrashTalkStatus {
     const config = this.manager.getConfig();
     const session = this.manager.getCurrentSession();
-    
+
     return {
       enabled: config.enabled,
       opponent: config.opponent,
       sessionActive: session !== null,
-      stats: this.manager.getSessionStats()
+      stats: this.manager.getSessionStats(),
     };
   }
 
@@ -104,7 +108,10 @@ export class TrashTalk {
       return "No opponent set! Use setOpponent() first!";
     }
 
-    return this.insultGenerator.generateInsult(config.opponent, category as any);
+    return this.insultGenerator.generateInsult(
+      config.opponent,
+      category as string | undefined
+    );
   }
 
   /**
@@ -143,7 +150,7 @@ Configuration Options:
   frequency: 'rare' | 'occasional' | 'frequent'
   categories: Array of category names
 
-Categories Available: ${this.getCategories().join(', ')}
+Categories Available: ${this.getCategories().join(", ")}
 
 Example Usage:
   const trashTalk = new TrashTalk();

@@ -43,7 +43,7 @@ type App = {
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "generating" | "complete">(
-    "idle",
+    "idle"
   );
   const [prompt, setPrompt] = useState("");
   const [submittedPrompt, setSubmittedPrompt] = useState("");
@@ -132,7 +132,7 @@ export default function Home() {
           const trimmedCode = trimCode(code);
 
           return { ...app, code, trimmedCode };
-        }),
+        })
       )
       .on("totalUsage", (usage) => {
         setAppA((app) =>
@@ -141,7 +141,7 @@ export default function Home() {
                 ...app,
                 completionTokens: usage.completion_tokens,
               }
-            : undefined,
+            : undefined
         );
       })
       .on("end", () => {
@@ -153,7 +153,7 @@ export default function Home() {
                   status: "complete",
                   totalTime: new Date().getTime() - startTime.getTime(),
                 }
-              : undefined,
+              : undefined
           );
           setSelectedTabA("preview");
           generatingCount--;
@@ -174,7 +174,7 @@ export default function Home() {
           const trimmedCode = trimCode(code);
 
           return { ...app, code, trimmedCode };
-        }),
+        })
       )
       .on("totalUsage", (usage) => {
         setAppB((app) =>
@@ -183,7 +183,7 @@ export default function Home() {
                 ...app,
                 completionTokens: usage.completion_tokens,
               }
-            : undefined,
+            : undefined
         );
       })
       .on("end", () => {
@@ -195,7 +195,7 @@ export default function Home() {
                   status: "complete",
                   totalTime: new Date().getTime() - startTime.getTime(),
                 }
-              : undefined,
+              : undefined
           );
           setSelectedTabB("preview");
           generatingCount--;
@@ -456,7 +456,7 @@ function Vote({
 
       const winners = payload.winners;
       const losers = apps.filter(
-        (app) => !winners.some((winner) => winner.clientId === app.clientId),
+        (app) => !winners.some((winner) => winner.clientId === app.clientId)
       );
 
       const data = saveBattleSchema.parse({ prompt, winners, losers });
@@ -468,7 +468,7 @@ function Vote({
         winners,
       };
     },
-    { didVote: false },
+    { didVote: false }
   );
 
   return (

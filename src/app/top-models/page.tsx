@@ -26,10 +26,10 @@ export default async function Page() {
     .select({
       model: apps.model,
       wins: sum(sql`CASE WHEN ${apps.didWin} = true THEN 1 ELSE 0 END`).mapWith(
-        Number,
+        Number
       ),
       losses: sum(
-        sql`CASE WHEN ${apps.didWin} = false THEN 1 ELSE 0 END`,
+        sql`CASE WHEN ${apps.didWin} = false THEN 1 ELSE 0 END`
       ).mapWith(Number),
       games: count(),
       winPercentage:

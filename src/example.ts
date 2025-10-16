@@ -2,7 +2,7 @@
  * Example usage and demonstration of the Trash Talk feature
  */
 
-import { TrashTalk } from './trash-talk';
+import { TrashTalk } from "./trash-talk";
 
 function runExamples() {
   console.log("🔥 TRASH TALK AI - Example Demo 🔥\n");
@@ -24,17 +24,17 @@ function runExamples() {
   // Example 3: Generate some insults
   console.log("=== Example 3: Manual Insult Generation ===");
   console.log("General insult:", trashTalk.generateInsult());
-  console.log("Tech insult:", trashTalk.generateInsult('tech'));
-  console.log("Gaming insult:", trashTalk.generateInsult('gaming'));
-  console.log("Intelligence insult:", trashTalk.generateInsult('intelligence'));
+  console.log("Tech insult:", trashTalk.generateInsult("tech"));
+  console.log("Gaming insult:", trashTalk.generateInsult("gaming"));
+  console.log("Intelligence insult:", trashTalk.generateInsult("intelligence"));
   console.log();
 
   // Example 4: Configure settings
   console.log("=== Example 4: Configuration ===");
   trashTalk.configure({
-    intensity: 'savage',
-    frequency: 'frequent',
-    categories: ['tech', 'gaming', 'intelligence']
+    intensity: "savage",
+    frequency: "frequent",
+    categories: ["tech", "gaming", "intelligence"],
   });
   console.log("Configured to savage mode with frequent trash talk!\n");
 
@@ -42,7 +42,7 @@ function runExamples() {
   console.log("=== Example 5: Prompt Enhancement ===");
   const samplePrompt = "What's the weather like today?";
   const enhanced = trashTalk.enhancePrompt(samplePrompt);
-  
+
   console.log("Original prompt:", enhanced.originalPrompt);
   console.log("Enhanced prompt:", enhanced.enhancedPrompt);
   console.log("Trash talk added:", enhanced.trashTalkAdded);
@@ -51,7 +51,7 @@ function runExamples() {
   }
   console.log();
 
-  // Example 6: System prompt creation  
+  // Example 6: System prompt creation
   console.log("=== Example 6: System Prompt Integration ===");
   const baseSystemPrompt = "You are a helpful AI assistant.";
   const systemPrompt = trashTalk.createSystemPrompt(baseSystemPrompt);
@@ -65,7 +65,7 @@ function runExamples() {
   trashTalk.generateInsult();
   trashTalk.generateInsult();
   trashTalk.generateInsult();
-  
+
   status = trashTalk.getStatus();
   console.log("Final status:", JSON.stringify(status, null, 2));
   console.log();
@@ -78,23 +78,29 @@ function runExamples() {
   // Example 9: Different opponents
   console.log("=== Example 9: Multiple Opponents ===");
   const opponents = ["Bob", "Charlie", "Diana", "Eve"];
-  
-  opponents.forEach(opponent => {
+
+  opponents.forEach((opponent) => {
     trashTalk.setOpponent(opponent);
-    console.log(`Roasting ${opponent}: ${trashTalk.generateInsult('general')}`);
+    console.log(`Roasting ${opponent}: ${trashTalk.generateInsult("general")}`);
   });
   console.log();
 
   // Example 10: Intensity levels
   console.log("=== Example 10: Different Intensity Levels ===");
   trashTalk.setOpponent("TestDummy");
-  
-  const intensities: ('mild' | 'savage' | 'nuclear')[] = ['mild', 'savage', 'nuclear'];
-  intensities.forEach(intensity => {
+
+  const intensities: ("mild" | "savage" | "nuclear")[] = [
+    "mild",
+    "savage",
+    "nuclear",
+  ];
+  intensities.forEach((intensity) => {
     trashTalk.configure({ intensity });
     const enhancement = trashTalk.enhancePrompt("Tell me a joke");
     if (enhancement.trashTalkContent) {
-      console.log(`${intensity.toUpperCase()}: ${enhancement.trashTalkContent}`);
+      console.log(
+        `${intensity.toUpperCase()}: ${enhancement.trashTalkContent}`
+      );
     }
   });
 
@@ -104,23 +110,24 @@ function runExamples() {
 // CLI demo function
 function runCLIDemo() {
   console.log("\n=== CLI Demo ===");
-  const { default: TrashTalkCLI } = require('./cli');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const TrashTalkCLI = require("./cli").default;
   const cli = new TrashTalkCLI();
-  
+
   console.log("CLI Help:");
-  console.log(cli.processCommand('help'));
-  
+  console.log(cli.processCommand("help"));
+
   console.log("\nSetting opponent:");
-  console.log(cli.processCommand('opponent', ['TestBot']));
-  
+  console.log(cli.processCommand("opponent", ["TestBot"]));
+
   console.log("\nToggling on:");
-  console.log(cli.processCommand('toggle'));
-  
+  console.log(cli.processCommand("toggle"));
+
   console.log("\nGenerating insult:");
-  console.log(cli.processCommand('insult', ['tech']));
-  
+  console.log(cli.processCommand("insult", ["tech"]));
+
   console.log("\nStatus check:");
-  console.log(cli.processCommand('status'));
+  console.log(cli.processCommand("status"));
 }
 
 // Run examples if this file is executed directly
